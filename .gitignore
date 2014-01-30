@@ -4,3 +4,9 @@
 *.jar
 *.war
 *.ear
+
+# Any files laying in root directory for testing features #
+/*.exe
+/*.dll
+/*.gct
+/*.txt
