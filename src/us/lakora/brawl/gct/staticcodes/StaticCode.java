@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,10 @@ public class StaticCode {
 	public String toString() {
 		return name;
 	}
-	
+
+	public static List<StaticCode> readDefaultCodesFile() throws FileNotFoundException, IOException {
+		return read(new BufferedReader(new InputStreamReader(StaticCodePanel.class.getClassLoader().getResourceAsStream("us/lakora/brawl/gct/default_codes.txt"))));
+	}
 	public static List<StaticCode> readFile(File file) throws FileNotFoundException, IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		return read(br);

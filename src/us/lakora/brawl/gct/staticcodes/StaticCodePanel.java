@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,19 +35,20 @@ public class StaticCodePanel extends JPanel {
 		gct = g;
 		edited = b;
 		
-		File file = new File(FILENAME);
 		List<StaticCode> codes;
 		try {
-			codes = StaticCode.readFile(file);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, "Could not read/write "+FILENAME, Editor.TITLE, JOptionPane.ERROR_MESSAGE);
-			try {
-				createStaticCodesFile(file);
-				codes = StaticCode.readFile(file);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				codes = new ArrayList<StaticCode>(0);
+			File file = new File(FILENAME);
+			codes = file.exists()
+					? StaticCode.readFile(file)
+					: StaticCode.readDefaultCodesFile();
+			File file2 = new File("additional_codes.txt");
+			if (file2.exists()) {
+				codes.addAll(StaticCode.readFile(file2));
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
+			codes = new ArrayList<StaticCode>(0);
 		}
 		StaticCodeToggler[] array = new StaticCodeToggler[codes.size()];
 		for (int i=0; i<array.length; i++) {
@@ -88,21 +90,6 @@ public class StaticCodePanel extends JPanel {
 				
 			});
 		}
-	}
-	
-	private static void createStaticCodesFile(File file) throws IOException {
-		InputStream is = StaticCodePanel.class.getClassLoader().getResourceAsStream("us/lakora/brawl/gct/default_codes.txt");
-		
-		if (is == null) {
-			throw new IOException("us/lakora/brawl/gct/default_codes.txt not found in classpath.");
-		}
-		
-		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-		for (int b = is.read(); b >= 0; b = is.read()) {
-			bw.write(b);
-		}
-		bw.close();
-		JOptionPane.showMessageDialog(null, "Created file "+FILENAME+" with default codes.", Editor.TITLE, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 }
