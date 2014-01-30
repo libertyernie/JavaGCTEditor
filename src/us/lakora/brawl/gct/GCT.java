@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
 import us.lakora.brawl.gct.gui.Editor;
 import us.lakora.brawl.gct.sdsl.SDSL;
 import us.lakora.brawl.gct.staticcodes.StaticCode;
+import us.lakora.brawl.gct.staticcodes.StaticCodeOccurrence;
 
 public class GCT {
 	
@@ -50,8 +51,9 @@ public class GCT {
 
 	/**
 	 * Maps a class representing a static code to a list of Line objects representing that code in memory (if the code is enabled.)
+	 * If you use a List here, static codes will be exported in the order they appear in static_codes.txt. If you use a sorted structure or sort it later, they will be exported in the same order they are present in the GCT.
 	 */
-	private HashMap<StaticCode, List<Line>> knownStaticCodes;
+	private LinkedList<StaticCodeOccurrence> knownStaticCodes;
 	
 	/**
 	 * Keeps track of the known dynamic codes embedded in the codeset.
@@ -66,7 +68,7 @@ public class GCT {
 	 */
 	public GCT(InputStream is) throws IOException, GCTFormatException, InterruptedException {
 		allLines = new LinkedList<Line>();
-		knownStaticCodes = new HashMap<StaticCode, List<Line>>();
+		knownStaticCodes = new LinkedList<StaticCodeOccurrence>();
 		knownDynamicCodes = new LinkedList<DynamicCode>();
 		byte[] header = new byte[8];
 		is.read(header);
@@ -135,10 +137,15 @@ public class GCT {
 		
 		HashSet<Line> toSkip = new HashSet<Line>();
 		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n\n");
+		
+		ArrayList<StaticCodeOccurrence> sorted = new ArrayList<StaticCodeOccurrence>(knownStaticCodes);
+		Collections.sort(sorted);
+		
 		if (separate) {
-			for (StaticCode sc : knownStaticCodes.keySet()) {
+			for (StaticCodeOccurrence sco : sorted) {
+				StaticCode sc = sco.getCode();
 				sb.append(sc.toString()+"\n");
-				List<Line> codeLines = knownStaticCodes.get(sc);
+				List<Line> codeLines = sco.getLines();
 				sb.append(codeLinesToString(codeLines));
 				toSkip.addAll(codeLines);
 				String comments = sc.getComments();
@@ -165,9 +172,12 @@ public class GCT {
 			}
 		}
 		sb.append('\n');
+		if (!sdsls.isEmpty()) {
+			sb.append("Stage-Dependent Song Loaders [Oshtoby]\n\n");
+		}
 		for (SDSL sdsl : sdsls) {
 			List<Line> codeLines = Arrays.asList(sdsl.getLineArray());
-			sb.append(sdsl.description() + "\n");
+			sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\n");
 			sb.append(codeLinesToString(codeLines) + "\n");
 		}
 		return sb.toString();
@@ -209,7 +219,7 @@ public class GCT {
 	public synchronized boolean findStaticCode(StaticCode sn) {
 		String[] stringArray = sn.getStringArray();
 		boolean found = false;
-//		int i = 0;
+		int i = 0, foundAt = -1;
 		ListIterator<Line> it = allLines.listIterator();
 		int pointInCode = 0;
 		Line[] newCode = new Line[stringArray.length];
@@ -223,20 +233,21 @@ public class GCT {
 				if (pointInCode == stringArray.length) {
 					if (!found) {
 						found = true;
+						foundAt = i-pointInCode;
 					} else {
 						System.err.println("Warning: the same code (" + sn + ") was found more than once in the GCT. The second instance will be ignored.");
 					}
 					pointInCode = 0; // reset counter
 				}
 			}
-//			i++;
+			i++;
 		}
 		if (found) {
 			List<Line> code = Arrays.asList(newCode);
-			knownStaticCodes.put(sn, code);
+			knownStaticCodes.add(new StaticCodeOccurrence(sn, code, foundAt));
+			System.out.println("Code found: " + sn.toString());
 			return true;
 		} else {
-			knownStaticCodes.remove(sn); // this case might not be used
 			return false;
 		}
 	}
@@ -246,23 +257,29 @@ public class GCT {
 	}
 	
 	public synchronized void deleteStaticCode(StaticCode sn) {
-		List<Line> codeList = knownStaticCodes.get(sn);
+		/*List<Line> codeList = knownStaticCodes.get(sn);
 		if (codeList != null) {
 			allLines.removeAll(codeList);
 			knownStaticCodes.remove(sn);
+		}*/
+		Iterator<StaticCodeOccurrence> it = knownStaticCodes.iterator();
+		while (it.hasNext()) {
+			StaticCodeOccurrence sco = it.next();
+			if (sco.getCode().equals(sn)) {
+				allLines.removeAll(sco.getLines());
+				it.remove();
+			}
 		}
 	}
 	
 	public synchronized void addStaticCode(StaticCode sn) {
 		String[] stringArray = sn.getStringArray();
-		if (!knownStaticCodes.containsKey(sn)) {
-			ArrayList<Line> toAdd = new ArrayList<Line>(stringArray.length);
-			for (String s : stringArray) {
-				toAdd.add(new Line(s));
-			}
-			allLines.addAll(toAdd);
-			knownStaticCodes.put(sn, toAdd);
+		ArrayList<Line> toAdd = new ArrayList<Line>(stringArray.length);
+		for (String s : stringArray) {
+			toAdd.add(new Line(s));
 		}
+		allLines.addAll(toAdd);
+		knownStaticCodes.add(new StaticCodeOccurrence(sn, toAdd));
 	}
 	
 	/**

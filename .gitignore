@@ -10,3 +10,6 @@
 /*.dll
 /*.gct
 /*.txt
+
+# Binaries (built by eclipse) #
+/bin
