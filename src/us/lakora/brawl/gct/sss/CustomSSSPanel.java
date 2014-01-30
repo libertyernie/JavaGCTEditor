@@ -1,5 +1,6 @@
 package us.lakora.brawl.gct.sss;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,25 +44,35 @@ public class CustomSSSPanel extends JPanel {
 	private boolean[] edited;
 	private SSS sss;
 	
+	private JPanel buttonPanel, centerPanel;
+	
 	public CustomSSSPanel(GCT gctarg, boolean[] editedarg) {
 		gct = gctarg;
 		edited = editedarg;
 
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new BorderLayout());
+		buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		this.add(buttonPanel, BorderLayout.EAST);
+		centerPanel = new JPanel();
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+		this.add(centerPanel, BorderLayout.CENTER);
 		if (findSSSInstance()) {
-			add(new JLabel(sss.getBrawl() + " stages on 1st screen\n"));
-			add(new JLabel(sss.getMelee() + " stages on 2nd screen\n"));
-			add(new JLabel(sss.getStages() + " stages defined"));
+			centerPanel.add(new JLabel(sss.getBrawl() + " stages on 1st screen\n"));
+			centerPanel.add(new JLabel(sss.getMelee() + " stages on 2nd screen\n"));
+			centerPanel.add(new JLabel(sss.getStages() + " stage pairs defined"));
 			
 			JButton showCode = new JButton("Show code");
-			add(showCode);
+			showCode.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+			buttonPanel.add(showCode);
 			showCode.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					DisplayLicense.readString(null, sss.lineArrayToString());
 				}
 			});
 			JButton removeCode = new JButton("Remove code");
-			add(removeCode);
+			removeCode.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+			buttonPanel.add(removeCode);
 			removeCode.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this code?",
@@ -77,6 +88,13 @@ public class CustomSSSPanel extends JPanel {
 		} else {
 			add(new JLabel("No custom SSS code found."));
 		}
+	}
+	
+	public void addSSSEditorButton(ActionListener al) {
+		JButton sssEditor = new JButton("Open SSS Editor");
+		sssEditor.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+		buttonPanel.add(sssEditor);
+		sssEditor.addActionListener(al);
 	}
 	
 	private boolean findSSSInstance() {

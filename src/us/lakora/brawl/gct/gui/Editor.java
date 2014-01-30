@@ -48,10 +48,10 @@ import us.lakora.brawl.gct.staticcodes.StaticCodePanel;
 public class Editor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
-	public final static String TITLE = "In-Place GCT Editor 3.5";
+	public final static String TITLE = "In-Place GCT Editor 3.6";
 	
 	private final static String ABOUT = TITLE + "\n" +
-			(char)169 + " 2013 libertyernie\n" +
+			(char)169 + " 2014 libertyernie\n" +
 			"\n" +
 			"This program is designed to export GCT codesets for Brawl, along with\n" +
 			"the capability to add/remove instances of the Stage-Dependent Song\n" +
@@ -226,6 +226,7 @@ public class Editor extends JFrame {
 			this.ep = new SDSLEditorPanel(gct, edited);
 			this.dsmp = new DefaultSettingsModifierPanel(gct, edited);
 			this.sssp = new CustomSSSPanel(gct, edited);
+			addSSSEditorButtonIfExeExists();
 			this.csvp = new CustomSongVolumePanel(gct, edited);
 		}
 		
@@ -341,6 +342,7 @@ public class Editor extends JFrame {
 				dsmp_container.add(this.dsmp);
 				this.sssp = new CustomSSSPanel(g, edited);
 				sssp_container.setViewportView(this.sssp);
+				addSSSEditorButtonIfExeExists();
 				this.csvp = new CustomSongVolumePanel(g, edited);
 				csvp_container.setViewportView(csvp);
 				this.ep = new SDSLEditorPanel(g, edited);
@@ -364,6 +366,42 @@ public class Editor extends JFrame {
 		}
 	}
 	
+	private void addSSSEditorButtonIfExeExists() {
+		if (new File("SSSEditor.exe").isFile()) {
+			sssp.addSSSEditorButton(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if (new File("SSSEditor.exe").isFile()) {
+						String gctpath = currentFile.getAbsolutePath();
+						File dir = currentFile.getParentFile();
+						while (dir != null) {
+							try {
+								if (new File(dir + File.separator + "private").isDirectory()) {
+									break;
+								}
+								if (new File(dir + File.separator + "projectm").isDirectory()) {
+									break;
+								}
+								dir = dir.getParentFile();
+							} catch (Exception e) {
+								dir = null;
+							}
+						}
+						if (close()) {
+							ProcessBuilder pb = new ProcessBuilder("SSSEditor.exe", gctpath);
+							if (dir != null) pb.directory(dir);
+							try {
+								pb.start();
+								System.exit(0);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			});
+		}
+	}
+
 	/**
 	 * Closes the current file, if there is one.
 	 * @return Whether the closing was successful; "true" if no file is open
@@ -391,6 +429,8 @@ public class Editor extends JFrame {
 				scp_container.setViewportView(null);
 				ep_container.remove(this.ep);
 				dsmp_container.remove(this.dsmp);
+				sssp_container.setViewportView(null);
+				csvp_container.setViewportView(null);
 				currentFile = null;
 				this.gct = null;
 				this.scp = null;
