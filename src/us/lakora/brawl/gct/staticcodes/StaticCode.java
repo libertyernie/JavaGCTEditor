@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * Represents a static Brawl code - that is, one that comes in the same form every time and is not customizable.
- * An instance of this class does not correspond to a specific instance of a code in the GCT, as is the case with MultipleCode.
+ * An instance of this class corresponds to a kind of code, not to a specific instance of a code in the GCT, as is the case with MultipleCode.
  * @author libertyernie
  */
 public class StaticCode {
@@ -90,6 +90,7 @@ public class StaticCode {
 			line = br.readLine();
 		}
 		if (code.size() > 0) {
+			// add last code
 			StaticCode sn = new StaticCode(codeName, code.toArray(new String[0]), comments.toString());
 			list.add(sn);
 		}
