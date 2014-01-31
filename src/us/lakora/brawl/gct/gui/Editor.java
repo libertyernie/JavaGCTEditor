@@ -39,6 +39,7 @@ import us.lakora.brawl.gct.DynamicCode;
 import us.lakora.brawl.gct.GCT;
 import us.lakora.brawl.gct.GCTFormatException;
 import us.lakora.brawl.gct.TXTExportOptions;
+import us.lakora.brawl.gct.asl.ASLDataPanel;
 import us.lakora.brawl.gct.csv.CustomSongVolumePanel;
 import us.lakora.brawl.gct.dsm.DefaultSettingsModifierPanel;
 import us.lakora.brawl.gct.sdsl.SDSLEditorPanel;
@@ -100,12 +101,15 @@ public class Editor extends JFrame {
 	private File currentFile;
 	private GCT gct;
 	private boolean[] edited;
+	
 	private StaticCodePanel scp;
 	private SDSLEditorPanel ep;
 	private DefaultSettingsModifierPanel dsmp;
 	private CustomSSSPanel sssp;
 	private CustomSongVolumePanel csvp;
-	private JScrollPane scp_container, sssp_container, csvp_container;
+	private ASLDataPanel asldp;
+	
+	private JScrollPane scp_container, sssp_container, csvp_container, asldp_container;
 	private JPanel ep_container, dsmp_container;
 	
 	public Editor() throws FileNotFoundException, IOException, GCTFormatException, InterruptedException {
@@ -153,22 +157,6 @@ public class Editor extends JFrame {
 				open();
 			}
 		});
-//		m = new JMenuItem("Save");
-//		file.add(m);
-//		m.setAccelerator(KeyStroke.getKeyStroke('S', InputEvent.CTRL_DOWN_MASK));
-//		m.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				save();
-//			}
-//		});
-//		m = new JMenuItem("Save As...");
-//		file.add(m);
-//		m.setAccelerator(KeyStroke.getKeyStroke('S', InputEvent.ALT_DOWN_MASK + InputEvent.CTRL_DOWN_MASK));
-//		m.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				saveAs();
-//			}
-//		});
 		m = new JMenuItem("Export...");
 		file.add(m);
 		m.setAccelerator(KeyStroke.getKeyStroke('E', InputEvent.SHIFT_DOWN_MASK + InputEvent.CTRL_DOWN_MASK));
@@ -228,6 +216,7 @@ public class Editor extends JFrame {
 			this.sssp = new CustomSSSPanel(gct, edited);
 			addSSSEditorButtonIfExeExists();
 			this.csvp = new CustomSongVolumePanel(gct, edited);
+			this.asldp = new ASLDataPanel(gct, edited);
 		}
 		
 		JTabbedPane tabs = new JTabbedPane();
@@ -253,12 +242,17 @@ public class Editor extends JFrame {
 		csvp_container.setPreferredSize(new Dimension(200, 100));
 		csvp_container.setBorder(b);
 		tabs.addTab("Custom Song Volume", csvp_container);
+		asldp_container = new JScrollPane();
+		asldp_container.setPreferredSize(new Dimension(200, 100));
+		asldp_container.setBorder(b);
+		tabs.addTab("ASL Data", asldp_container);
 		if (currentFile != null) {
 			scp_container.setViewportView(scp);
 			dsmp_container.add(dsmp);
 			ep_container.add(ep);
 			sssp_container.setViewportView(sssp);
 			csvp_container.setViewportView(csvp);
+			asldp_container.setViewportView(asldp);
 		}
 		
 //		JPanel buttons = new JPanel();
@@ -347,6 +341,8 @@ public class Editor extends JFrame {
 				csvp_container.setViewportView(csvp);
 				this.ep = new SDSLEditorPanel(g, edited);
 				ep_container.add(this.ep);
+				this.asldp = new ASLDataPanel(g, edited);
+				asldp_container.setViewportView(this.asldp);
 				edited[0] = false;
 				setTitle(TITLE + " - " + f.getName()+ " (" + this.gct.size() + ")");
 				pack();
@@ -431,6 +427,7 @@ public class Editor extends JFrame {
 				dsmp_container.remove(this.dsmp);
 				sssp_container.setViewportView(null);
 				csvp_container.setViewportView(null);
+				asldp_container.setViewportView(null);
 				currentFile = null;
 				this.gct = null;
 				this.scp = null;
@@ -438,6 +435,7 @@ public class Editor extends JFrame {
 				this.dsmp = null;
 				this.sssp = null;
 				this.csvp = null;
+				this.asldp = null;
 //				for (StaticCodeToggler s : staticCodeBoxes) {
 //					s.setEnabled(false);
 //				}
