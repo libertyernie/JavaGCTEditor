@@ -84,8 +84,7 @@ public class GCT {
 			}
 		} else {
 			// assume text file
-			// I know using GUI code here makes it less portable, but this way the user is only asked if the file turns out to be a text file
-			int res = JOptionPane.showConfirmDialog(null, "Skip codes that are turned off (no \"*\" in the file)?",
+			int res = JOptionPane.showConfirmDialog(null, "Skip codes that are turned off (no \"*\" at start of line)?",
 					Editor.TITLE, JOptionPane.YES_NO_CANCEL_OPTION);
 			if (res == JOptionPane.CANCEL_OPTION) {
 				throw new InterruptedException("Opening file cancelled");
