@@ -435,7 +435,13 @@ public class Editor extends JFrame {
 		if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 			File newfile = jfc.getSelectedFile();
 			try {
-				if (newfile.getName().toLowerCase().endsWith(".txt")) {
+				if (newfile.getName().toLowerCase().endsWith(".gct")) {
+					gct.write(newfile);
+					return true;
+				} else {
+					if (!newfile.getName().toLowerCase().endsWith(".txt")) {
+						newfile = new File(newfile.getPath() + ".txt");
+					}
 					TXTExportOptions dialog = new TXTExportOptions();
 					dialog.setVisible(true);
 					if (dialog.dialogResult == false) {
@@ -452,12 +458,6 @@ public class Editor extends JFrame {
 					dynamicCodes.addAll(ep.getKnownSDSLInstances());
 					bw.write(gct.splitExport(separate, sdslAfter));
 					bw.close();
-				} else {
-					if (!newfile.getName().toLowerCase().endsWith(".gct")) {
-						newfile = new File(newfile.getPath() + ".gct");
-					}
-					gct.write(newfile);
-					return true;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
