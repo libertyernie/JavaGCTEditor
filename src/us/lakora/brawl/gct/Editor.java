@@ -194,6 +194,13 @@ public class Editor extends JFrame {
 				JOptionPane.showMessageDialog(editor, ABOUT, TITLE, JOptionPane.PLAIN_MESSAGE, icon);
 			}
 		});
+		m = new JMenuItem("Line-by-line breakdown");
+		help.add(m);
+		m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (gct != null) DisplayLicense.readString(null, gct.lineAudit());
+			}
+		});
 		m = new JMenuItem("License");
 		help.add(m);
 		m.addActionListener(new ActionListener() {

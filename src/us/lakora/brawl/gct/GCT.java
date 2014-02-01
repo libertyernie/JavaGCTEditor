@@ -152,7 +152,7 @@ public class GCT {
 				toSkip.addAll(codeLines);
 			}
 		}
-		sb.append("Remainder of Codeset\n");
+		if (toSkip.size() != allLines.size()) sb.append("Remainder of Codeset\n");
 		for (Line l : allLines) {
 			if (!toSkip.contains(l)) {
 				sb.append("* " + l.toString() + "\n");
@@ -166,6 +166,16 @@ public class GCT {
 			List<Line> codeLines = Arrays.asList(sdsl.getLineArray());
 			sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\n");
 			sb.append(Code.codeLinesToString(codeLines) + "\n");
+		}
+		return sb.toString();
+	}
+	
+	public String lineAudit() {
+		StringBuilder sb = new StringBuilder();
+		for (Line l : allLines) {
+			sb.append(l + " ");
+			sb.append(l.getAssignedCode() != null ? l.getAssignedCode().description() : "(none)");
+			sb.append('\n');
 		}
 		return sb.toString();
 	}
@@ -244,11 +254,6 @@ public class GCT {
 	}
 	
 	public synchronized void deleteStaticCode(StaticCode sn) {
-		/*List<Line> codeList = knownStaticCodes.get(sn);
-		if (codeList != null) {
-			allLines.removeAll(codeList);
-			knownStaticCodes.remove(sn);
-		}*/
 		Iterator<StaticCodeOccurrence> it = knownStaticCodes.iterator();
 		while (it.hasNext()) {
 			StaticCodeOccurrence sco = it.next();
