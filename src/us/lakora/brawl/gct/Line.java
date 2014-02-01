@@ -9,6 +9,7 @@ import java.util.Arrays;
 public class Line implements Comparable<Line> {
 
 	public byte[] data;
+	private Code code;
 	
 	/**
 	 * Creates a new Line object with the given data.
@@ -28,6 +29,16 @@ public class Line implements Comparable<Line> {
 		for (int i=0; i<8; i++) {
 			String number = s.substring(2*i, 2*i+2);
 			this.data[i] = (byte)Integer.parseInt(number, 16);
+		}
+	}
+	
+	/**
+	 * Records which code this line is part of. If it's already marked as part of a code, an exception will be thrown.
+	 * @throws AlreadyAssignedException 
+	 */
+	public void assign(Code from) throws AlreadyAssignedException {
+		if (from != null) {
+			throw new AlreadyAssignedException("Line " + this + " is already part of the code " + code.description());
 		}
 	}
 	

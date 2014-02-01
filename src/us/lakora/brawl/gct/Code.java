@@ -2,11 +2,13 @@ package us.lakora.brawl.gct;
 
 public abstract class Code {
 	
-	public String toString() {
-		String s = getClass().getName();
-		s = s.substring(s.lastIndexOf('.')+1);
-		return s;
-	}
+	public abstract Line[] getLineArray();
+	
+	/**
+	 * The description used for the code in a text file.
+	 * @return
+	 */
+	public abstract String description();
 
 	/**
 	 * Returns the code lines for a code, with a trailing newline.

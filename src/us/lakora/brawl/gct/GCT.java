@@ -132,9 +132,9 @@ public class GCT {
 			for (StaticCodeOccurrence sco : sorted) {
 				StaticCode sc = sco.getCode();
 				sb.append(sc.toString()+"\n");
-				List<Line> codeLines = sco.getLines();
+				Line[] codeLines = sco.getLineArray();
 				sb.append(Code.codeLinesToString(codeLines));
-				toSkip.addAll(codeLines);
+				for (Line l : codeLines) toSkip.add(l);
 				String comments = sc.getComments();
 				if (comments != null) {
 					sb.append(comments.replaceAll("</?html>", "").replaceAll("<br?/>", "\n"));
@@ -253,7 +253,7 @@ public class GCT {
 		while (it.hasNext()) {
 			StaticCodeOccurrence sco = it.next();
 			if (sco.getCode().equals(sn)) {
-				allLines.removeAll(sco.getLines());
+				for (Line l : sco.getLineArray()) allLines.remove(l);
 				it.remove();
 			}
 		}

@@ -3,9 +3,10 @@ package us.lakora.brawl.gct.staticcodes;
 import java.util.Collection;
 import java.util.ArrayList;
 
+import us.lakora.brawl.gct.Code;
 import us.lakora.brawl.gct.Line;
 
-public class StaticCodeOccurrence implements Comparable<StaticCodeOccurrence> {
+public class StaticCodeOccurrence extends Code implements Comparable<StaticCodeOccurrence> {
 	
 	private StaticCode code;
 	private ArrayList<Line> lines;
@@ -25,17 +26,20 @@ public class StaticCodeOccurrence implements Comparable<StaticCodeOccurrence> {
 	public StaticCode getCode() {
 		return code;
 	}
-	
-	/*
-	 * Makes a copy of this object's line list, containing the same instances of the Line class.
-	 */
-	public ArrayList<Line> getLines() {
-		return new ArrayList<Line>(lines);
+
+	@Override
+	public Line[] getLineArray() {
+		return lines.toArray(new Line[0]);
 	}
 
 	@Override
 	public int compareTo(StaticCodeOccurrence o) {
 		return foundAt - o.foundAt;
+	}
+
+	@Override
+	public String description() {
+		return code.toString();
 	}
 
 }
