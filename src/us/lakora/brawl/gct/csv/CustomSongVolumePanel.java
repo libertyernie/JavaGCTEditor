@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import us.lakora.DisplayLicense;
+import us.lakora.brawl.gct.Code;
 import us.lakora.brawl.gct.Editor;
 import us.lakora.brawl.gct.GCT;
 import us.lakora.brawl.gct.Line;
@@ -50,7 +51,7 @@ public class CustomSongVolumePanel extends JPanel {
 			add(showCode);
 			showCode.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					DisplayLicense.readString(null, csv.lineArrayToString());
+					DisplayLicense.readString(null, Code.codeLinesToString(csv.getLineArray()));
 				}
 			});
 			JButton removeCode = new JButton("Remove code");

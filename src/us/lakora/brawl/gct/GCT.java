@@ -117,17 +117,6 @@ public class GCT {
 	}
 	
 	/**
-	 * Returns the code lines for this code, with a trailing newline.
-	 */
-	public static String codeLinesToString(List<Line> lines) {
-		StringBuilder sb = new StringBuilder(10*lines.size());
-		for (Line l : lines) {
-			sb.append("* "+l.toString()+"\n");
-		}
-		return sb.toString();
-	}
-	
-	/**
 	 * Exports to TXT. Known static codes separated if separate == true.
 	 */
 	public String splitExport(boolean separate, boolean sdslAfterOtherCodes) {
@@ -144,7 +133,7 @@ public class GCT {
 				StaticCode sc = sco.getCode();
 				sb.append(sc.toString()+"\n");
 				List<Line> codeLines = sco.getLines();
-				sb.append(codeLinesToString(codeLines));
+				sb.append(Code.codeLinesToString(codeLines));
 				toSkip.addAll(codeLines);
 				String comments = sc.getComments();
 				if (comments != null) {
@@ -158,7 +147,7 @@ public class GCT {
 					sdsls.add((SDSL)dc);
 				} else {
 					sb.append(dc.description() + "\n");
-					sb.append(codeLinesToString(codeLines) + "\n");
+					sb.append(Code.codeLinesToString(codeLines) + "\n");
 				}
 				toSkip.addAll(codeLines);
 			}
@@ -176,7 +165,7 @@ public class GCT {
 		for (SDSL sdsl : sdsls) {
 			List<Line> codeLines = Arrays.asList(sdsl.getLineArray());
 			sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\n");
-			sb.append(codeLinesToString(codeLines) + "\n");
+			sb.append(Code.codeLinesToString(codeLines) + "\n");
 		}
 		return sb.toString();
 	}
