@@ -42,5 +42,10 @@ public class StaticCodeOccurrence extends Code implements Comparable<StaticCodeO
 	public String description() {
 		return code.toString();
 	}
+	
+	@Override
+	public String getComments() {
+		return code.getComments();
+	}
 
 }

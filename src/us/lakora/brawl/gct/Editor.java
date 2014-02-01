@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -442,22 +441,32 @@ public class Editor extends JFrame {
 					if (!newfile.getName().toLowerCase().endsWith(".txt")) {
 						newfile = new File(newfile.getPath() + ".txt");
 					}
-					TXTExportOptions dialog = new TXTExportOptions();
+					TXTExportOptionsDialog dialog = new TXTExportOptionsDialog();
 					dialog.setVisible(true);
 					if (dialog.dialogResult == false) {
 						JOptionPane.showMessageDialog(this, "Export cancelled.");
 						return false;
 					}
 					
-					boolean separate = dialog.getSeparateCodes();
-					boolean sdslAfter = dialog.getSdslAfter();
-					//boolean separate = (JOptionPane.YES_OPTION == 
-					//		JOptionPane.showConfirmDialog(this, "Would you like to separate known codes from the main block?", TITLE, JOptionPane.YES_NO_OPTION));
 					BufferedWriter bw = new BufferedWriter(new FileWriter(newfile));
-					LinkedList<DynamicCode> dynamicCodes = new LinkedList<DynamicCode>();
-					dynamicCodes.addAll(ep.getKnownSDSLInstances());
-					bw.write(gct.splitExport(separate, sdslAfter));
+
+					switch (dialog.getSelectedMethod()) {
+					case KNOWN_FIRST:
+						bw.write(gct.exportReorder(dialog.shouldBeSortedByOrigOrder(), dialog.shouldBeSDSLAfter()));
+						break;
+					case RAW:
+						bw.write(gct.exportSameOrder(false));
+						break;
+					case SAME_ORDER:
+						bw.write(gct.exportSameOrder(true));
+						break;
+					default:
+						JOptionPane.showMessageDialog(this, "Cannot export - please select an option.", TITLE, JOptionPane.ERROR_MESSAGE);
+						bw.close();
+						return false;
+					}
 					bw.close();
+					return true;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -117,55 +117,81 @@ public class GCT {
 	}
 	
 	/**
-	 * Exports to TXT. Known static codes separated if separate == true.
+	 * Exports to TXT in original order.
+	 * @param separate Whether to separate the known codes (true) or export everything as one block (false).
 	 */
-	public String splitExport(boolean separate, boolean sdslAfterOtherCodes) {
+	public String exportSameOrder(boolean separate) {
+		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n\n");
+		Code currentCode = null;
+		if (allLines.get(0).getAssignedCode() == null) {
+			sb.append("Unknown Code(s)\n");
+		}
+		for (Line l : allLines) {
+			if (separate && currentCode != l.getAssignedCode()) {
+				String comments = currentCode == null ? null : currentCode.getComments();
+				if (comments != null) sb.append(comments + "\n");
+				
+				currentCode = l.getAssignedCode();
+				String desc = currentCode == null ? "Unknown Code(s)" : currentCode.description();
+				sb.append("\n" + desc + "\n");
+			}
+			sb.append(l.toString() + "\n");
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * Exports to TXT: known codes first; unknown codes later.
+	 * @param sortByOriginalOrder Whether to export the known codes in the same order they were in the original file. Unknown codes will be in a separate block.
+	 * @param sdslAfterOtherCodes Whether to move the SDSL codes to the end, after the unknown code block.
+	 */
+	public String exportReorder(boolean sortByOriginalOrder, boolean sdslAfterOtherCodes) {
 		LinkedList<SDSL> sdsls = new LinkedList<SDSL>();
 		
 		HashSet<Line> toSkip = new HashSet<Line>();
 		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n\n");
 		
 		ArrayList<StaticCodeOccurrence> sorted = new ArrayList<StaticCodeOccurrence>(knownStaticCodes);
-		Collections.sort(sorted);
+		if (sortByOriginalOrder) Collections.sort(sorted);
 		
-		if (separate) {
-			for (StaticCodeOccurrence sco : sorted) {
-				StaticCode sc = sco.getCode();
-				sb.append(sc.toString()+"\n");
-				Line[] codeLines = sco.getLineArray();
-				sb.append(Code.codeLinesToString(codeLines));
-				for (Line l : codeLines) toSkip.add(l);
-				String comments = sc.getComments();
-				if (comments != null) {
-					sb.append(comments.replaceAll("</?html>", "").replaceAll("<br?/>", "\n"));
-				}
-				sb.append('\n');
+		for (StaticCodeOccurrence sco : sorted) {
+			StaticCode sc = sco.getCode();
+			sb.append(sc.toString()+"\n");
+			Line[] codeLines = sco.getLineArray();
+			sb.append(Code.codeLinesToString(codeLines));
+			for (Line l : codeLines) toSkip.add(l);
+			String comments = sc.getComments();
+			if (comments != null) {
+				sb.append(comments.replaceAll("</?html>", "").replaceAll("<br?/>", "\n"));
 			}
-			for (DynamicCode dc : knownDynamicCodes) {
-				List<Line> codeLines = Arrays.asList(dc.getLineArray());
-				if (sdslAfterOtherCodes && (dc instanceof SDSL)) {
-					sdsls.add((SDSL)dc);
-				} else {
-					sb.append(dc.description() + "\n");
-					sb.append(Code.codeLinesToString(codeLines) + "\n");
-				}
-				toSkip.addAll(codeLines);
-			}
+			sb.append('\n');
 		}
-		if (toSkip.size() != allLines.size()) sb.append("Remainder of Codeset\n");
-		for (Line l : allLines) {
-			if (!toSkip.contains(l)) {
-				sb.append("* " + l.toString() + "\n");
+		for (DynamicCode dc : knownDynamicCodes) {
+			List<Line> codeLines = Arrays.asList(dc.getLineArray());
+			if (sdslAfterOtherCodes && (dc instanceof SDSL)) {
+				sdsls.add((SDSL)dc);
+			} else {
+				sb.append(dc.description() + "\n");
+				sb.append(Code.codeLinesToString(codeLines) + "\n");
+			}
+			toSkip.addAll(codeLines);
+		}
+		if (toSkip.size() != allLines.size()) {
+			sb.append("Remainder of Codeset\n");
+			for (Line l : allLines) {
+				if (!toSkip.contains(l)) {
+					sb.append("* " + l.toString() + "\n");
+				}
 			}
 		}
 		sb.append('\n');
 		if (!sdsls.isEmpty()) {
 			sb.append("Stage-Dependent Song Loaders [Oshtoby]\n\n");
-		}
-		for (SDSL sdsl : sdsls) {
-			List<Line> codeLines = Arrays.asList(sdsl.getLineArray());
-			sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\n");
-			sb.append(Code.codeLinesToString(codeLines) + "\n");
+			for (SDSL sdsl : sdsls) {
+				List<Line> codeLines = Arrays.asList(sdsl.getLineArray());
+				sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\n");
+				sb.append(Code.codeLinesToString(codeLines) + "\n");
+			}
 		}
 		return sb.toString();
 	}

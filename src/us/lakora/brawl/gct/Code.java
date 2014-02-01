@@ -13,6 +13,10 @@ public abstract class Code {
 	 * @return
 	 */
 	public abstract String description();
+	
+	public String getComments() {
+		return null;
+	}
 
 	/**
 	 * Returns the code lines for a code, with a trailing newline.
