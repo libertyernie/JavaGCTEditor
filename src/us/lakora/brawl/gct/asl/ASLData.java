@@ -19,7 +19,7 @@ public class ASLData extends DynamicCode {
 			System.arraycopy(l.data, 0, sub, 0, 4);
 			name = new String(sub);
 			buttonActivatorCount = l.data[4];
-			randomCount = l.data[4];
+			randomCount = l.data[5];
 			buttonActivators = new ArrayList<ButtonActivator>(buttonActivatorCount);
 		}
 		
