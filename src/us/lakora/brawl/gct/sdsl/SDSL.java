@@ -1,5 +1,7 @@
 package us.lakora.brawl.gct.sdsl;
 
+import java.util.Arrays;
+
 import us.lakora.brawl.gct.Line;
 import us.lakora.brawl.gct.DynamicCode;
 
@@ -16,6 +18,7 @@ public class SDSL extends DynamicCode {
 	}
 	
 	public SDSL(Line[] array) {
+		super(Arrays.asList(array));
 		if (array.length != 4) {
 			throw new IndexOutOfBoundsException("Stage-Dependent Song Loader must be 4 lines");
 		}

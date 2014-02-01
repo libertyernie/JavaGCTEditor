@@ -2,6 +2,10 @@ package us.lakora.brawl.gct;
 
 public abstract class Code {
 	
+	public Code(Iterable<? extends Line> lines) {
+		for (Line l : lines) l.assign(this);
+	}
+	
 	public abstract Line[] getLineArray();
 	
 	/**

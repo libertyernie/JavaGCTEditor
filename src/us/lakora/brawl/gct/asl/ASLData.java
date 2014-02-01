@@ -71,6 +71,7 @@ public class ASLData extends DynamicCode {
 	}
 	
 	public ASLData(List<Line> code) {
+		super(code);
 		lines = code.toArray(new Line[0]);
 		stageData = new ArrayList<StageData>();
 		for (int i=3; i<lines.length-2; i++) {

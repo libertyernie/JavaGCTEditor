@@ -13,6 +13,7 @@ public class StaticCodeOccurrence extends Code implements Comparable<StaticCodeO
 	private int foundAt; // used for sorting
 	
 	public StaticCodeOccurrence(StaticCode code, Collection<? extends Line> lines) {
+		super(lines);
 		this.code = code;
 		this.lines = new ArrayList<Line>(lines);
 		this.foundAt = Integer.MAX_VALUE;

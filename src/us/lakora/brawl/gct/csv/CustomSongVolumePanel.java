@@ -16,7 +16,6 @@ import us.lakora.brawl.gct.Code;
 import us.lakora.brawl.gct.Editor;
 import us.lakora.brawl.gct.GCT;
 import us.lakora.brawl.gct.Line;
-import us.lakora.brawl.gct.sss.SSS;
 
 public class CustomSongVolumePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -97,8 +96,8 @@ public class CustomSongVolumePanel extends JPanel {
 					}
 					pointInSkeleton++;
 					if (pointInSkeleton == SKELETON.length) {
-						keepLooking = false;
 						csv = new CustomSongVolume(code);
+						keepLooking = false;
 						gct.recordDynamicCode(csv);
 					}
 				}

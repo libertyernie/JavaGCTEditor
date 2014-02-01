@@ -1,5 +1,7 @@
 package us.lakora.brawl.gct.dsm;
 
+import java.util.Arrays;
+
 import us.lakora.brawl.gct.DynamicCode;
 import us.lakora.brawl.gct.Line;
 
@@ -52,6 +54,7 @@ public class DSM extends DynamicCode {
 	}
 	
 	public DSM(Line... array) {
+		super(Arrays.asList(array));
 		if (array.length != 9) {
 			throw new IndexOutOfBoundsException("DSM code must be 9 lines");
 		}

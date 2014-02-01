@@ -2,6 +2,8 @@ package us.lakora.brawl.gct;
 
 import java.util.Arrays;
 
+import javax.swing.JOptionPane;
+
 /**
  * Describes a line of code in a GCT file.
  * @author libertyernie
@@ -32,14 +34,22 @@ public class Line implements Comparable<Line> {
 		}
 	}
 	
+	public Code getAssignedCode() {
+		return code;
+	}
+	
 	/**
 	 * Records which code this line is part of. If it's already marked as part of a code, an exception will be thrown.
 	 * @throws AlreadyAssignedException 
 	 */
-	public void assign(Code from) throws AlreadyAssignedException {
-		if (from != null) {
-			throw new AlreadyAssignedException("Line " + this + " is already part of the code " + code.description());
+	public void assign(Code from) {
+		if (code != null) {
+			String s = "Line " + this + " is already part of the code " + code.description() + ". This reflects a programming error in the application.";
+			new Exception(s).printStackTrace();
+			JOptionPane.showMessageDialog(null, s, "Error", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
 		}
+		code = from;
 	}
 	
 	public boolean equals(Object o) {

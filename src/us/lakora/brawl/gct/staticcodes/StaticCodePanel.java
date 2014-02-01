@@ -69,10 +69,10 @@ public class StaticCodePanel extends JPanel {
 			super(title);
 			this.sn = snarg;
 			setToolTipText(sn.getComments());
-			if (gct != null) {
-				setSelected(gct.findStaticCode(sn));
-			} else {
+			if (gct == null) {
 				setEnabled(false);
+			} else {
+				setSelected(gct.findStaticCode(sn));
 			}
 			addActionListener(new ActionListener() {
 

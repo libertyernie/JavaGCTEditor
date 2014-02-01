@@ -16,6 +16,7 @@ public class SSS extends DynamicCode {
 	}
 	
 	public SSS(List<Line> code, List<Integer> skipCounts) {
+		super(code);
 		lines = code.toArray(new Line[0]);
 		brawl = skipCounts.get(0);
 		melee = skipCounts.get(1);

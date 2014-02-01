@@ -20,6 +20,7 @@ public class CustomSongVolume extends DynamicCode implements Iterable<VolumeSett
 	}
 	
 	public CustomSongVolume(List<Line> code) {
+		super(code);
 		lines = code.toArray(new Line[0]);
 		settings = new LinkedList<VolumeSetting>();
 		
