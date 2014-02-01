@@ -44,7 +44,9 @@ public class ASLDataPanel extends JPanel {
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		this.add(centerPanel, BorderLayout.CENTER);
 		if (findASLInstance()) {
-			centerPanel.add(new JLabel("found: " + aslData.getLineArray().length + " lines"));
+			for (String line : aslData.longform().split("\n")) {
+				centerPanel.add(new JLabel(line));
+			}
 			
 			JButton showCode = new JButton("Show code");
 			showCode.setAlignmentX(JButton.RIGHT_ALIGNMENT);
@@ -64,7 +66,7 @@ public class ASLDataPanel extends JPanel {
 						gct.deleteDynamicCode(aslData);
 						edited[0] = true;
 						removeAll();
-						add(new JLabel("Custom SSS code removed."));
+						add(new JLabel("ASL Data code removed."));
 						repaint();
 					}
 				}
