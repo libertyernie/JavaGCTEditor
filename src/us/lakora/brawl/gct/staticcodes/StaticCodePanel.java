@@ -21,8 +21,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import us.lakora.brawl.gct.Editor;
 import us.lakora.brawl.gct.GCT;
-import us.lakora.brawl.gct.gui.Editor;
 
 public class StaticCodePanel extends JPanel {
 	private static final long serialVersionUID = 1L;

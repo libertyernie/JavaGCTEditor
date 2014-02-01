@@ -21,7 +21,6 @@ import java.util.ListIterator;
 
 import javax.swing.JOptionPane;
 
-import us.lakora.brawl.gct.gui.Editor;
 import us.lakora.brawl.gct.sdsl.SDSL;
 import us.lakora.brawl.gct.staticcodes.StaticCode;
 import us.lakora.brawl.gct.staticcodes.StaticCodeOccurrence;

@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import us.lakora.DisplayLicense;
+import us.lakora.brawl.gct.Editor;
 import us.lakora.brawl.gct.GCT;
 import us.lakora.brawl.gct.Line;
-import us.lakora.brawl.gct.gui.Editor;
 import us.lakora.brawl.gct.sss.SSS;
 
 public class CustomSongVolumePanel extends JPanel {

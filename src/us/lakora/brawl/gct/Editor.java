@@ -1,4 +1,4 @@
-package us.lakora.brawl.gct.gui;
+package us.lakora.brawl.gct;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -35,10 +35,6 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import us.lakora.DisplayLicense;
-import us.lakora.brawl.gct.DynamicCode;
-import us.lakora.brawl.gct.GCT;
-import us.lakora.brawl.gct.GCTFormatException;
-import us.lakora.brawl.gct.TXTExportOptions;
 import us.lakora.brawl.gct.asl.ASLDataPanel;
 import us.lakora.brawl.gct.csv.CustomSongVolumePanel;
 import us.lakora.brawl.gct.dsm.DefaultSettingsModifierPanel;
@@ -121,7 +117,7 @@ public class Editor extends JFrame {
 		this.currentFile = filearg;
 		this.edited = new boolean[1];
 		
-		URL iconURL = Editor.class.getClassLoader().getResource("us/lakora/brawl/gct/gui/smallIcon.png");
+		URL iconURL = Editor.class.getClassLoader().getResource("us/lakora/brawl/gct/smallIcon.png");
 		if (iconURL != null) {
 			setIconImage(new ImageIcon(iconURL).getImage());
 		}
@@ -189,7 +185,7 @@ public class Editor extends JFrame {
 		m.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ImageIcon icon = null;
-				URL iconURL = Editor.class.getClassLoader().getResource("us/lakora/brawl/gct/gui/icon.png");
+				URL iconURL = Editor.class.getClassLoader().getResource("us/lakora/brawl/gct/icon.png");
 				if (iconURL != null) {
 					icon = new ImageIcon(iconURL);
 				}
