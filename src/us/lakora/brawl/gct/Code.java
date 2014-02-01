@@ -14,6 +14,9 @@ public abstract class Code {
 	 */
 	public abstract String description();
 	
+	/**
+	 * The comments for the code, including a trailing newline, or null if there are none.
+	 */
 	public String getComments() {
 		return null;
 	}

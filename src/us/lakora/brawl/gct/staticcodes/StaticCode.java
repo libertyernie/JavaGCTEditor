@@ -23,7 +23,7 @@ public class StaticCode {
 	public StaticCode(String name, String[] code, String comments) {
 		this.name = name;
 		this.code = code;
-		if ((comments == null) || (comments.equals("<html></html>") || comments.length() == 0)) {
+		if ((comments == null) || (comments.length() == 0)) {
 			this.comments = null;
 		} else {
 			this.comments = comments;
@@ -76,7 +76,7 @@ public class StaticCode {
 			} else if (line.length() == 0) {
 				// new line: store the code and get ready to make a new one
 				if (code.size() > 0) {
-					StaticCode sn = new StaticCode(codeName, code.toArray(new String[0]), "<html>"+comments.toString()+"</html>");
+					StaticCode sn = new StaticCode(codeName, code.toArray(new String[0]), comments.toString());
 					list.add(sn);
 				}
 				comments = new StringBuilder();
@@ -88,7 +88,7 @@ public class StaticCode {
 				} else {
 					// not a code line; it's a comment
 					comments.append(line);
-					comments.append("<br/>");
+					comments.append("\n");
 				}
 			}
 			line = br.readLine();

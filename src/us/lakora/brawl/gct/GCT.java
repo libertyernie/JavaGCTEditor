@@ -121,21 +121,23 @@ public class GCT {
 	 * @param separate Whether to separate the known codes (true) or export everything as one block (false).
 	 */
 	public String exportSameOrder(boolean separate) {
-		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n\n");
+		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n");
 		Code currentCode = null;
 		if (allLines.get(0).getAssignedCode() == null) {
-			sb.append("Unknown Code(s)\n");
+			sb.append("\nUnknown Code(s)\n");
 		}
 		for (Line l : allLines) {
 			if (separate && currentCode != l.getAssignedCode()) {
 				String comments = currentCode == null ? null : currentCode.getComments();
-				if (comments != null) sb.append(comments + "\n");
+				if (comments != null) sb.append(comments);
+				
+				sb.append("\n");
 				
 				currentCode = l.getAssignedCode();
 				String desc = currentCode == null ? "Unknown Code(s)" : currentCode.description();
-				sb.append("\n" + desc + "\n");
+				sb.append(desc + "\n");
 			}
-			sb.append(l.toString() + "\n");
+			sb.append("* " + l.toString() + "\n");
 		}
 		return sb.toString();
 	}
@@ -162,7 +164,7 @@ public class GCT {
 			for (Line l : codeLines) toSkip.add(l);
 			String comments = sc.getComments();
 			if (comments != null) {
-				sb.append(comments.replaceAll("</?html>", "").replaceAll("<br?/>", "\n"));
+				sb.append(comments);
 			}
 			sb.append('\n');
 		}
