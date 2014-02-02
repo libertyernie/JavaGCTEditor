@@ -21,7 +21,6 @@ import javax.swing.JTextField;
 import us.lakora.brawl.gct.GCT;
 import us.lakora.brawl.gct.Line;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class SDSLEditorPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
@@ -31,11 +30,11 @@ public class SDSLEditorPanel extends JPanel {
 	private GCT gct;
 	
 	private JTextField stageID;
-	private JComboBox stageList;
+	private JComboBox<String> stageList;
 	private JTextField songID;
-	private JComboBox songList;
+	private JComboBox<String> songList;
 	
-	private JComboBox selector;
+	private JComboBox<SDSL> selector;
 	private JButton delete;
 	private ArrayList<SDSL> knownSDSLInstances;
 	
@@ -49,10 +48,10 @@ public class SDSLEditorPanel extends JPanel {
 		this.edited = edited;
 		
 		stageID = new JTextField();
-		stageList = new JComboBox();
+		stageList = new JComboBox<String>();
 		songID = new JTextField();
 		songID.setPreferredSize(new Dimension(64, 24));
-		songList = new JComboBox();
+		songList = new JComboBox<String>();
 		
 		setLayout(new BorderLayout());
 		
@@ -64,13 +63,13 @@ public class SDSLEditorPanel extends JPanel {
 		JButton add = new JButton("Add");
 		
 		/* Populate the box */
-		selector = new JComboBox(); // in Java 7 this would be JComboBox<SDSL>
+		selector = new JComboBox<SDSL>();
 		for (SDSL s : getKnownSDSLInstances()) {
 			selector.addItem(s);
 		}
 		/* Set the sdsl variable, if the gct has sdsl codes in it */
 		if (selector.getItemCount() > 0) {
-			this.sdsl = (SDSL)selector.getItemAt(0);
+			this.sdsl = selector.getItemAt(0);
 		}
 		
 		/* When the selector is changed, update the other boxes to show the new code */
@@ -79,7 +78,7 @@ public class SDSLEditorPanel extends JPanel {
 				if (SAVE_FIELDS_ON_CHANGE) {
 					update();
 				}
-				sdsl = (SDSL)selector.getSelectedItem(); // replace sdsl variable
+				sdsl = selector.getItemAt(selector.getSelectedIndex()); // replace sdsl variable
 				initializeFields(); // update the boxes
 			}
 		});
@@ -247,7 +246,7 @@ public class SDSLEditorPanel extends JPanel {
 		private static final long serialVersionUID = 1L; // eclipse wants this here
 
 		public StagePanel(String label,
-				final JTextField stageID, final JComboBox stageList,
+				final JTextField stageID, final JComboBox<String> stageList,
 				final List<Integer> stageIDSource, final List<String> stageListSource) {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			
