@@ -90,23 +90,23 @@ public class CustomSSSPanel extends JPanel {
 					}
 				}
 			});
-			if (new File("SSSEditor.exe").isFile()) {
-				JButton sssEditor = new JButton("Open SSS Editor");
-				sssEditor.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-				buttonPanel.add(sssEditor);
-				sssEditor.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						launchSSSEditor();
-					}
-				});
-			}
+			JButton sssEditor = new JButton("Open SSS Editor");
+			sssEditor.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+			buttonPanel.add(sssEditor);
+			sssEditor.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					launchSSSEditor();
+				}
+			});
 		} else {
 			add(new JLabel("No custom SSS code found."));
 		}
 	}
 	
 	public void launchSSSEditor() {
-		if (new File("SSSEditor.exe").isFile()) {
+		if (!new File("SSSEditor.exe").isFile()) {
+			JOptionPane.showMessageDialog(null, "SSSEditor.exe not found.\nYou can get it from: http://www.lakora.us/brawl/ssseditor");
+		} else {
 			String gctpath = gctFile.getAbsolutePath();
 			File dir = gctFile.getParentFile();
 			// try to find dir

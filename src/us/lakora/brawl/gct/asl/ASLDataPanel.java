@@ -3,6 +3,8 @@ package us.lakora.brawl.gct.asl;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -30,12 +32,14 @@ public class ASLDataPanel extends JPanel {
 	private GCT gct;
 	private boolean[] edited;
 	private ASLData aslData;
+	private File gctFile;
 	
 	private JPanel buttonPanel, centerPanel;
 	
-	public ASLDataPanel(GCT gctarg, boolean[] editedarg) {
-		gct = gctarg;
-		edited = editedarg;
+	public ASLDataPanel(final GCT gct, final boolean[] edited, final File gctFile) {
+		this.gct = gct;
+		this.edited = edited;
+		this.gctFile = gctFile;
 
 		setLayout(new BorderLayout());
 		buttonPanel = new JPanel();
@@ -72,16 +76,42 @@ public class ASLDataPanel extends JPanel {
 					}
 				}
 			});
+			JButton aslTool = new JButton("Open ASL Tool");
+			aslTool.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+			buttonPanel.add(aslTool);
+			aslTool.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					launchASLTool();
+				}
+			});
 		} else {
 			add(new JLabel("No custom SSS code found."));
 		}
 	}
 	
-	public void addSSSEditorButton(ActionListener al) {
-		JButton sssEditor = new JButton("Open SSS Editor");
-		sssEditor.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-		buttonPanel.add(sssEditor);
-		sssEditor.addActionListener(al);
+	public void launchASLTool() {
+		if (!new File("ASL Tool.exe").isFile()) {
+			JOptionPane.showMessageDialog(null, "ASL Tool.exe not found.\nYou can get it from: http://forums.kc-mm.com/Gallery/BrawlView.php?Number=21742");
+		} else {
+			String gctpath = gctFile.getAbsolutePath();
+			File gctdir = gctFile.getParentFile();
+			// warning
+			int r = edited[0] ? JOptionPane.showConfirmDialog(null,
+					"Close GCT Editor and open ASL Tool?\nAny unsaved changes you have made in GCT Editor will be lost.",
+					"Confirm", JOptionPane.OK_CANCEL_OPTION)
+					: JOptionPane.OK_OPTION;
+			if (r == JOptionPane.OK_OPTION) {
+				// launch program
+				ProcessBuilder pb = new ProcessBuilder("ASL Tool.exe", gctpath);
+				pb.directory(gctdir);
+				try {
+					pb.start();
+					System.exit(0);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	private static enum STATE {

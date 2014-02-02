@@ -312,7 +312,7 @@ public class Editor extends JFrame {
 			sssp_container.setViewportView(this.sssp);
 			this.ep = new SDSLEditorPanel(g, edited);
 			ep_container.add(this.ep);
-			this.asldp = new ASLDataPanel(g, edited);
+			this.asldp = new ASLDataPanel(g, edited, currentFile);
 			asldp_container.setViewportView(this.asldp);
 			
 			edited[0] = false;
