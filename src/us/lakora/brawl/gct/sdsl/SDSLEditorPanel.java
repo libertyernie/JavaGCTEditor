@@ -120,7 +120,7 @@ public class SDSLEditorPanel extends JPanel {
 		selectorPanel.add(selector);
 		selectorPanel.add(down);
 		selectorPanel.add(add);
-		add(selectorPanel, BorderLayout.SOUTH);
+		add(selectorPanel, BorderLayout.NORTH);
 		
 		/* Create the main panel */
 		JPanel main = new JPanel();
