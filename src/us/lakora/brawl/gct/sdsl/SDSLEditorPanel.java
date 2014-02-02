@@ -30,9 +30,9 @@ public class SDSLEditorPanel extends JPanel {
 	private GCT gct;
 	
 	private JTextField stageID;
-	private JComboBox<String> stageList;
+	private JComboBox<IDLists.NameAndID> stageList;
 	private JTextField songID;
-	private JComboBox<String> songList;
+	private JComboBox<IDLists.NameAndID> songList;
 	
 	private JComboBox<SDSL> selector;
 	private JButton delete;
@@ -48,10 +48,10 @@ public class SDSLEditorPanel extends JPanel {
 		this.edited = edited;
 		
 		stageID = new JTextField();
-		stageList = new JComboBox<String>();
+		stageList = new JComboBox<IDLists.NameAndID>();
 		songID = new JTextField();
 		songID.setPreferredSize(new Dimension(64, 24));
-		songList = new JComboBox<String>();
+		songList = new JComboBox<IDLists.NameAndID>();
 		
 		setLayout(new BorderLayout());
 		
@@ -128,10 +128,10 @@ public class SDSLEditorPanel extends JPanel {
 		add(main, BorderLayout.CENTER);
 		
 		/* the "stage" row */
-		main.add(new StagePanel("Stage: ", stageID, stageList, IDLists.stageIDList, IDLists.stageList));
+		main.add(new StagePanel("Stage: ", stageID, stageList, IDLists.stages));
 		
 		/* the "song" row */
-		main.add(new StagePanel("Song:  ", songID, songList, IDLists.songIDList, IDLists.songList));
+		main.add(new StagePanel("Song:  ", songID, songList, IDLists.songs));
 		
 		JPanel songPanel = new JPanel();
 		main.add(songPanel);
@@ -166,7 +166,6 @@ public class SDSLEditorPanel extends JPanel {
 	}
 	
 	private void initializeFields() {
-		
 		JComponent[] temporary = {stageID, stageList, songID, songList};
 		if (sdsl == null) {
 			for (int i=0; i<temporary.length; i++) {
@@ -174,14 +173,14 @@ public class SDSLEditorPanel extends JPanel {
 			}
 		} else {
 			stageID.setText(Integer.toString(sdsl.getStageID(), 16));
-			int i1 = IDLists.stageIDList.indexOf(sdsl.getStageID());
+			int i1 = IDLists.stageIndexFor(sdsl.getStageID());
 			if (i1 >= 0) {
 				stageList.setSelectedIndex(i1);
 			} else {
 				stageList.setSelectedIndex(0);
 			}
 			songID.setText(Integer.toString(sdsl.getSongID(), 16));
-			int i2 = IDLists.songIDList.indexOf(sdsl.getSongID());
+			int i2 = IDLists.songIndexFor(sdsl.getSongID());
 			if (i2 >= 0) {
 				songList.setSelectedIndex(i2);
 			} else {
@@ -191,7 +190,6 @@ public class SDSLEditorPanel extends JPanel {
 				temporary[i].setEnabled(true);
 			}
 		}
-//		edited.set(false);
 	}
 	
 	public synchronized boolean findSDSLInstances() {
@@ -246,8 +244,8 @@ public class SDSLEditorPanel extends JPanel {
 		private static final long serialVersionUID = 1L; // eclipse wants this here
 
 		public StagePanel(String label,
-				final JTextField stageID, final JComboBox<String> stageList,
-				final List<Integer> stageIDSource, final List<String> stageListSource) {
+				final JTextField stageID, final JComboBox<IDLists.NameAndID> stageList,
+				final List<? extends IDLists.NameAndID> stageSource) {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			
 			add(new JLabel(label));
@@ -261,16 +259,17 @@ public class SDSLEditorPanel extends JPanel {
 				public void focusLost(FocusEvent arg0) {
 					edited[0] = true;
 					/* When the stage ID box loses focus, update the list */
-					int index = stageIDSource.indexOf(Integer.parseInt(stageID.getText(), 16));
-					if (index >= 0) {
-						stageList.setSelectedIndex(index);
-					} else {
-						/* not present in the list? show the first element - the empty string */
-						stageList.setSelectedIndex(0);
+					int id = Integer.parseInt(stageID.getText(), 16);
+					stageList.setSelectedIndex(0); // fallback
+					for (int i=0; i<stageSource.size(); i++) {
+						if (stageSource.get(i).id == id) {
+							stageList.setSelectedIndex(i);
+							break;
+						}
 					}
 				}
 			});
-			for (String s : stageListSource) {
+			for (IDLists.NameAndID s : stageSource) {
 				stageList.addItem(s);
 			}
 			stageList.addActionListener(new ActionListener() {
@@ -278,8 +277,9 @@ public class SDSLEditorPanel extends JPanel {
 					edited[0] = true;
 					/* When the stage list is changed, update the ID box */
 					int index = stageList.getSelectedIndex();
-					if (index != 0) stageID.setText( // But don't change the text box if the first item (empty) is selected
-							Integer.toString(stageIDSource.get(index), 16));
+					if (index != 0) { // But don't change the text box if the first item (empty) is selected
+						stageID.setText(Integer.toString(stageSource.get(index).id, 16));
+					}
 				}
 			});
 			add(stageList);

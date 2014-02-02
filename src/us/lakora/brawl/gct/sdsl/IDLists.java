@@ -4,18 +4,75 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IDLists {
+	
+	public static class NameAndID {
+		public int id;
+		public String name;
+		
+		public NameAndID(int id, String name) {
+			this.id = id;
+			this.name = name;
+		}
+		
+		public String toString() {
+			return name;
+		}
+	}
+	
+	public static class Stage extends NameAndID {
+		public Stage(int id, String name) {
+			super(id, name);
+		}
+	}
+	
+	public static class Song extends NameAndID {
+		public String filename;
+		
+		public Song(int id, String filename, String name) {
+			super(id, name);
+			this.filename = filename;
+		}
+		
+		public String toString() {
+			return filename + ": " + name;
+		}
+	}
 
-	public final static List<Integer> stageIDList = new ArrayList<Integer>(85);
-	public final static List<String> stageList = new ArrayList<String>(85);
-	public final static List<Integer> songIDList = new ArrayList<Integer>(277);
-	public final static List<String> songList = new ArrayList<String>(277);
+	public final static List<Stage> stages = new ArrayList<Stage>(85);
+	public final static List<Song> songs = new ArrayList<Song>(277);
+
+	public static Stage stageFor(int id) {
+		for (Stage s : stages) {
+			if (s.id == id) return s;
+		}
+		return null;
+	}
+	public static Song songFor(int id) {
+		for (Song s : songs) {
+			if (s.id == id) return s;
+		}
+		return null;
+	}
+
+	public static int stageIndexFor(int id) {
+		for (int i=0; i<stages.size(); i++) {
+			if (stages.get(i).id == id) return i;
+		}
+		return -1;
+	}
+	public static int songIndexFor(int id) {
+		for (int i=0; i<songs.size(); i++) {
+			if (songs.get(i).id == id) return i;
+		}
+		return -1;
+	}
+	
 	private static void stageAdd(int i, String s) {
-		stageIDList.add(i);
-		stageList.add(s);
+		stages.add(new Stage(i, s));
 	}
 	private static void songadd(String name, String filename, String id, boolean unsure) {
-		songIDList.add(Integer.parseInt(id, 16));
-		songList.add(filename + ": " + name);
+		int i = Integer.parseInt(id, 16);
+		songs.add(new Song(i, filename, name));
 	}
 	static {
 		stageAdd(-1, "");

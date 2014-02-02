@@ -59,25 +59,13 @@ public class SDSL extends DynamicCode {
 	}
 	
 	public String description() {
-		String song = IDLists.songList.get(IDLists.songIDList.indexOf(getSongID()));
-		String stage = IDLists.stageList.get(IDLists.stageIDList.indexOf(getStageID()));
+		String song = IDLists.songFor(getSongID()).toString();
+		String stage = IDLists.stageFor(getStageID()).name;
 		return stage + ": always play " + song + " [Oshtoby]";
 	}
 	
 	public Line getStageLinePointer() {
 		return lines[0];
 	}
-	
-//	public int hashCode() {
-//		byte stageid = stageLinePointer.data[7];
-//		byte b1 = songLinePointer.data[6];
-//		byte b2 = songLinePointer.data[7];
-//		return (stageid*65536 + b1*256 + b2);
-//	}
-//	
-//	public boolean equals(Object o) {
-//		SDSL s = (SDSL)o;
-//		return (s.hashCode() == hashCode());
-//	}
 
 }
