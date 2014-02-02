@@ -308,9 +308,8 @@ public class Editor extends JFrame {
 			dsmp_container.add(this.dsmp);
 			this.csvp = new CustomSongVolumePanel(g, edited);
 			csvp_container.setViewportView(csvp);
-			this.sssp = new CustomSSSPanel(g, edited);
+			this.sssp = new CustomSSSPanel(g, edited, currentFile);
 			sssp_container.setViewportView(this.sssp);
-			addSSSEditorButtonIfExeExists();
 			this.ep = new SDSLEditorPanel(g, edited);
 			ep_container.add(this.ep);
 			this.asldp = new ASLDataPanel(g, edited);
@@ -330,42 +329,6 @@ public class Editor extends JFrame {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.getMessage(), TITLE, JOptionPane.ERROR_MESSAGE);
-		}
-	}
-	
-	private void addSSSEditorButtonIfExeExists() {
-		if (new File("SSSEditor.exe").isFile()) {
-			sssp.addSSSEditorButton(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					if (new File("SSSEditor.exe").isFile()) {
-						String gctpath = currentFile.getAbsolutePath();
-						File dir = currentFile.getParentFile();
-						while (dir != null) {
-							try {
-								if (new File(dir + File.separator + "private").isDirectory()) {
-									break;
-								}
-								if (new File(dir + File.separator + "projectm").isDirectory()) {
-									break;
-								}
-								dir = dir.getParentFile();
-							} catch (Exception e) {
-								dir = null;
-							}
-						}
-						if (close()) {
-							ProcessBuilder pb = new ProcessBuilder("SSSEditor.exe", gctpath);
-							if (dir != null) pb.directory(dir);
-							try {
-								pb.start();
-								System.exit(0);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			});
 		}
 	}
 

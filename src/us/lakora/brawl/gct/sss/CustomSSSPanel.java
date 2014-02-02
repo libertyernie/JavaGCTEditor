@@ -3,6 +3,8 @@ package us.lakora.brawl.gct.sss;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -44,12 +46,14 @@ public class CustomSSSPanel extends JPanel {
 	private GCT gct;
 	private boolean[] edited;
 	private SSS sss;
+	private File gctFile;
 	
 	private JPanel buttonPanel, centerPanel;
 	
-	public CustomSSSPanel(GCT gctarg, boolean[] editedarg) {
-		gct = gctarg;
-		edited = editedarg;
+	public CustomSSSPanel(final GCT gct, final boolean[] edited, final File gctFile) {
+		this.gct = gct;
+		this.edited = edited;
+		this.gctFile = gctFile;
 
 		setLayout(new BorderLayout());
 		buttonPanel = new JPanel();
@@ -86,16 +90,55 @@ public class CustomSSSPanel extends JPanel {
 					}
 				}
 			});
+			if (new File("SSSEditor.exe").isFile()) {
+				JButton sssEditor = new JButton("Open SSS Editor");
+				sssEditor.setAlignmentX(JButton.RIGHT_ALIGNMENT);
+				buttonPanel.add(sssEditor);
+				sssEditor.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						launchSSSEditor();
+					}
+				});
+			}
 		} else {
 			add(new JLabel("No custom SSS code found."));
 		}
 	}
 	
-	public void addSSSEditorButton(ActionListener al) {
-		JButton sssEditor = new JButton("Open SSS Editor");
-		sssEditor.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-		buttonPanel.add(sssEditor);
-		sssEditor.addActionListener(al);
+	public void launchSSSEditor() {
+		if (new File("SSSEditor.exe").isFile()) {
+			String gctpath = gctFile.getAbsolutePath();
+			File dir = gctFile.getParentFile();
+			// try to find dir
+			while (dir != null) {
+				try {
+					if (new File(dir + File.separator + "private").isDirectory()
+							|| new File(dir + File.separator + "projectm").isDirectory()
+							|| new File(dir + File.separator + "minsuery").isDirectory()) {
+						break;
+					}
+					dir = dir.getParentFile();
+				} catch (Exception e) {
+					dir = null;
+				}
+			}
+			// warning
+			int r = edited[0] ? JOptionPane.showConfirmDialog(null,
+					"Close GCT Editor and open SSS Editor?\nAny unsaved changes you have made in GCT Editor will be lost.",
+					"Confirm", JOptionPane.OK_CANCEL_OPTION)
+					: JOptionPane.OK_OPTION;
+			if (r == JOptionPane.OK_OPTION) {
+				// launch program
+				ProcessBuilder pb = new ProcessBuilder("SSSEditor.exe", gctpath);
+				if (dir != null) pb.directory(dir);
+				try {
+					pb.start();
+					System.exit(0);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	private boolean findSSSInstance() {
