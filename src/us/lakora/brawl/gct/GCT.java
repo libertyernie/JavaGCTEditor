@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,16 +47,7 @@ public class GCT {
 
 	private LinkedList<Line> allLines;
 
-	/**
-	 * Maps a class representing a static code to a list of Line objects representing that code in memory (if the code is enabled.)
-	 * If you use a List here, static codes will be exported in the order they appear in static_codes.txt. If you use a sorted structure or sort it later, they will be exported in the same order they are present in the GCT.
-	 */
-	private LinkedList<StaticCodeOccurrence> knownStaticCodes;
-	
-	/**
-	 * Keeps track of the known dynamic codes embedded in the codeset.
-	 */
-	private LinkedList<DynamicCode> knownDynamicCodes;
+	private LinkedList<Code> knownCodes;
 	
 	/**
 	 * Reads the data from an InputStream and then closes it.
@@ -67,8 +57,7 @@ public class GCT {
 	 */
 	public GCT(InputStream is) throws IOException, GCTFormatException, InterruptedException {
 		allLines = new LinkedList<Line>();
-		knownStaticCodes = new LinkedList<StaticCodeOccurrence>();
-		knownDynamicCodes = new LinkedList<DynamicCode>();
+		knownCodes = new LinkedList<Code>();
 		byte[] header = new byte[8];
 		is.read(header);
 		if (Arrays.equals(header, HEADER)) {
@@ -153,30 +142,21 @@ public class GCT {
 		HashSet<Line> toSkip = new HashSet<Line>();
 		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n\n");
 		
-		ArrayList<StaticCodeOccurrence> sorted = new ArrayList<StaticCodeOccurrence>(knownStaticCodes);
-		if (sortByOriginalOrder) Collections.sort(sorted);
+		/*ArrayList<StaticCodeOccurrence> sorted = new ArrayList<StaticCodeOccurrence>(knownStaticCodes);
+		if (sortByOriginalOrder) Collections.sort(sorted);*/
 		
-		for (StaticCodeOccurrence sco : sorted) {
-			StaticCode sc = sco.getCode();
-			sb.append(sc.toString()+"\n");
-			Line[] codeLines = sco.getLineArray();
+		for (Code code : knownCodes) {
+			sb.append(code.description()+"\n");
+			
+			Line[] codeLines = code.getLineArray();
 			sb.append(Code.codeLinesToString(codeLines));
 			for (Line l : codeLines) toSkip.add(l);
-			String comments = sc.getComments();
+			
+			String comments = code.getComments();
 			if (comments != null) {
 				sb.append(comments);
 			}
 			sb.append('\n');
-		}
-		for (DynamicCode dc : knownDynamicCodes) {
-			List<Line> codeLines = Arrays.asList(dc.getLineArray());
-			if (sdslAfterOtherCodes && (dc instanceof SDSL)) {
-				sdsls.add((SDSL)dc);
-			} else {
-				sb.append(dc.description() + "\n");
-				sb.append(Code.codeLinesToString(codeLines) + "\n");
-			}
-			toSkip.addAll(codeLines);
 		}
 		if (toSkip.size() != allLines.size()) {
 			sb.append("Remainder of Codeset\n");
@@ -269,7 +249,7 @@ public class GCT {
 		}
 		if (found) {
 			List<Line> code = Arrays.asList(newCode);
-			knownStaticCodes.add(new StaticCodeOccurrence(sn, code, foundAt));
+			knownCodes.add(new StaticCodeOccurrence(sn, code, foundAt));
 			System.out.println("Code found: " + sn.toString());
 			return true;
 		} else {
@@ -282,12 +262,15 @@ public class GCT {
 	}
 	
 	public synchronized void deleteStaticCode(StaticCode sn) {
-		Iterator<StaticCodeOccurrence> it = knownStaticCodes.iterator();
+		Iterator<Code> it = knownCodes.iterator();
 		while (it.hasNext()) {
-			StaticCodeOccurrence sco = it.next();
-			if (sco.getCode().equals(sn)) {
-				for (Line l : sco.getLineArray()) allLines.remove(l);
-				it.remove();
+			Code code = it.next();
+			if (code instanceof StaticCodeOccurrence) {
+				StaticCodeOccurrence sco = (StaticCodeOccurrence)code;
+				if (sco.getCode().equals(sn)) {
+					for (Line l : sco.getLineArray()) allLines.remove(l);
+					it.remove();
+				}
 			}
 		}
 	}
@@ -299,14 +282,14 @@ public class GCT {
 			toAdd.add(new Line(s));
 		}
 		allLines.addAll(toAdd);
-		knownStaticCodes.add(new StaticCodeOccurrence(sn, toAdd));
+		knownCodes.add(new StaticCodeOccurrence(sn, toAdd));
 	}
 	
 	/**
 	 * Adds a code to the GCT and records it in the internal list.
 	 */
 	public synchronized void addDynamicCode(DynamicCode c) {
-		knownDynamicCodes.add(c);
+		knownCodes.add(c);
 		allLines.addAll(Arrays.asList(c.getLineArray()));
 	}
 	
@@ -315,7 +298,7 @@ public class GCT {
 	 * Should be used by initialization functions that look for existing codes in the GCT.
 	 */
 	public synchronized void recordDynamicCode(DynamicCode c) {
-		knownDynamicCodes.add(c);
+		knownCodes.add(c);
 	}
 	
 	public synchronized void deleteDynamicCode(DynamicCode c) {
@@ -333,7 +316,7 @@ public class GCT {
 				}
 			}
 		}
-		knownDynamicCodes.remove(c);
+		knownCodes.remove(c);
 		if (!done) {
 			System.err.println("Removal warning: Not all code lines found in internal GCT");
 		}
