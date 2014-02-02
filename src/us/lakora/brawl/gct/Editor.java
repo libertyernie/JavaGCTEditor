@@ -101,11 +101,11 @@ public class Editor extends JFrame {
 	private StaticCodePanel scp;
 	private SDSLEditorPanel ep;
 	private DefaultSettingsModifierPanel dsmp;
-	private CustomSSSPanel sssp;
 	private CustomSongVolumePanel csvp;
+	private CustomSSSPanel sssp;
 	private ASLDataPanel asldp;
 	
-	private JScrollPane scp_container, sssp_container, csvp_container, asldp_container;
+	private JScrollPane scp_container, csvp_container, sssp_container, asldp_container;
 	private JPanel ep_container, dsmp_container;
 	
 	public Editor() throws FileNotFoundException, IOException, GCTFormatException, InterruptedException {
@@ -219,20 +219,20 @@ public class Editor extends JFrame {
 		scp_container = new JScrollPane();
 		dsmp_container = new JPanel();
 		ep_container = new JPanel();
-		sssp_container = new JScrollPane();
 		csvp_container = new JScrollPane();
+		sssp_container = new JScrollPane();
 		asldp_container = new JScrollPane();
 		
 		JComponent[] allContainers = {
-			scp_container, dsmp_container, ep_container, sssp_container, csvp_container, asldp_container
+			scp_container, dsmp_container, ep_container, csvp_container, sssp_container, asldp_container
 		};
 		for (JComponent c : allContainers) c.setBorder(b);
 
 		tabs.addTab("Static Codes", scp_container);
 		tabs.addTab("Default Settings Modifier", dsmp_container);
 		tabs.addTab("Stage-Dependent Song Loader", ep_container);
-		tabs.addTab("Custom SSS", sssp_container);
 		tabs.addTab("Custom Song Volume", csvp_container);
+		tabs.addTab("Custom SSS", sssp_container);
 		tabs.addTab("ASL Data", asldp_container);
 		
 		if (filearg != null && filearg.exists()) {
@@ -306,11 +306,11 @@ public class Editor extends JFrame {
 			scp_container.setViewportView(scp);
 			this.dsmp = new DefaultSettingsModifierPanel(g, edited);
 			dsmp_container.add(this.dsmp);
+			this.csvp = new CustomSongVolumePanel(g, edited);
+			csvp_container.setViewportView(csvp);
 			this.sssp = new CustomSSSPanel(g, edited);
 			sssp_container.setViewportView(this.sssp);
 			addSSSEditorButtonIfExeExists();
-			this.csvp = new CustomSongVolumePanel(g, edited);
-			csvp_container.setViewportView(csvp);
 			this.ep = new SDSLEditorPanel(g, edited);
 			ep_container.add(this.ep);
 			this.asldp = new ASLDataPanel(g, edited);
@@ -395,16 +395,16 @@ public class Editor extends JFrame {
 				scp_container.setViewportView(null);
 				ep_container.remove(this.ep);
 				dsmp_container.remove(this.dsmp);
-				sssp_container.setViewportView(null);
 				csvp_container.setViewportView(null);
+				sssp_container.setViewportView(null);
 				asldp_container.setViewportView(null);
 				currentFile = null;
 				this.gct = null;
 				this.scp = null;
 				this.ep = null;
 				this.dsmp = null;
-				this.sssp = null;
 				this.csvp = null;
+				this.sssp = null;
 				this.asldp = null;
 				edited[0] = false;
 				setTitle(TITLE);
