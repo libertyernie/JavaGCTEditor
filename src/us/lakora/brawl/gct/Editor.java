@@ -431,49 +431,57 @@ public class Editor extends JFrame {
 		jfc.addChoosableFileFilter(gctfilter);
 		jfc.setFileFilter(bothfilter);
 		jfc.setAcceptAllFileFilterUsed(false);
-		if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-			File newfile = jfc.getSelectedFile();
-			try {
-				if (newfile.getName().toLowerCase().endsWith(".gct")) {
-					gct.write(newfile);
-					return true;
-				} else {
-					if (!newfile.getName().toLowerCase().endsWith(".txt")) {
-						newfile = new File(newfile.getPath() + ".txt");
-					}
-					TXTExportOptionsDialog dialog = new TXTExportOptionsDialog();
-					dialog.setVisible(true);
-					if (dialog.dialogResult == false) {
-						JOptionPane.showMessageDialog(this, "Export cancelled.");
-						return false;
-					}
-					
-					BufferedWriter bw = new BufferedWriter(new FileWriter(newfile));
-
-					switch (dialog.getSelectedMethod()) {
-					case KNOWN_FIRST:
-						bw.write(gct.exportReorder(dialog.shouldBeSortedByOrigOrder(), dialog.shouldBeSDSLAfter()));
-						break;
-					case RAW:
-						bw.write(gct.exportSameOrder(false));
-						break;
-					case SAME_ORDER:
-						bw.write(gct.exportSameOrder(true));
-						break;
-					default:
-						JOptionPane.showMessageDialog(this, "Cannot export - please select an option.", TITLE, JOptionPane.ERROR_MESSAGE);
-						bw.close();
-						return false;
-					}
-					bw.close();
-					return true;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, e.getMessage(), TITLE, JOptionPane.ERROR_MESSAGE);
+		if (jfc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+			return false;
+		}
+		File newfile = jfc.getSelectedFile();
+		if (newfile.exists()) {
+			int r = JOptionPane.showConfirmDialog(this, "Are you sure you want to overwrite " + newfile.getName() + "?",
+					getTitle(), JOptionPane.OK_CANCEL_OPTION);
+			if (r != JOptionPane.OK_OPTION) {
+				return false;
 			}
 		}
-		return false;
+		try {
+			if (newfile.getName().toLowerCase().endsWith(".gct")) {
+				gct.write(newfile);
+				return true;
+			} else {
+				if (!newfile.getName().toLowerCase().endsWith(".txt")) {
+					newfile = new File(newfile.getPath() + ".txt");
+				}
+				TXTExportOptionsDialog dialog = new TXTExportOptionsDialog();
+				dialog.setVisible(true);
+				if (dialog.dialogResult == false) {
+					JOptionPane.showMessageDialog(this, "Export cancelled.");
+					return false;
+				}
+				
+				BufferedWriter bw = new BufferedWriter(new FileWriter(newfile));
+
+				switch (dialog.getSelectedMethod()) {
+				case KNOWN_FIRST:
+					bw.write(gct.exportReorder(dialog.shouldBeSortedByOrigOrder(), dialog.shouldBeSDSLAfter()));
+					break;
+				case RAW:
+					bw.write(gct.exportSameOrder(false));
+					break;
+				case SAME_ORDER:
+					bw.write(gct.exportSameOrder(true));
+					break;
+				default:
+					JOptionPane.showMessageDialog(this, "Cannot export - please select an option.", TITLE, JOptionPane.ERROR_MESSAGE);
+					bw.close();
+					return false;
+				}
+				bw.close();
+				return true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage(), TITLE, JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
 	}
 
 }
