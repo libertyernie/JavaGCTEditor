@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -57,8 +56,10 @@ public class SDSLEditorPanel extends JPanel {
 		stageID = new JTextField();
 		stageList = new JComboBox<IDLists.NameAndID>();
 		songID = new JTextField();
-		songID.setPreferredSize(new Dimension(64, 24));
 		songList = new JComboBox<IDLists.NameAndID>();
+
+		stageID.setMinimumSize(new Dimension(32, 24));
+		songID.setMinimumSize(new Dimension(32, 24));
 		
 		setLayout(new BorderLayout());
 		
@@ -77,7 +78,6 @@ public class SDSLEditorPanel extends JPanel {
 			selectorModel.addElement(s);
 		}
 		selector.setFixedCellWidth(150);
-		updateRowCount();
 		/* Set the sdsl variable, if the gct has sdsl codes in it */
 		if (selectorModel.size() > 0) {
 			this.sdsl = selectorModel.get(0);
@@ -118,23 +118,14 @@ public class SDSLEditorPanel extends JPanel {
 		delete.addActionListener(new ActionListener() {
 			public synchronized void actionPerformed(ActionEvent arg0) {
 				if (sdsl != null) delete(sdsl);
-				updateRowCount();
 			}
 		});
 		
 		add.addActionListener(new ActionListener() {
 			public synchronized void actionPerformed(ActionEvent arg0) {
 				add();
-				updateRowCount();
 			}
 		});
-		
-		selectorPanel.add(delete);
-		selectorPanel.add(up);
-		//selectorPanel.add(selector);
-		selectorPanel.add(down);
-		selectorPanel.add(add);
-		//add(selectorPanel, BorderLayout.SOUTH);
 		
 		add(new JScrollPane(selector, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
 		
@@ -144,21 +135,18 @@ public class SDSLEditorPanel extends JPanel {
 		add(main, BorderLayout.CENTER);
 		
 		/* the "stage" row */
-		main.add(new StagePanel("Stage: ", stageID, stageList, IDLists.stages));
+		main.add(new IDRow("Stage: ", stageID, stageList, IDLists.stages));
 		
 		/* the "song" row */
-		main.add(new StagePanel("Song:  ", songID, songList, IDLists.songs));
-		
-		main.add(Box.createVerticalGlue());
-		
+		main.add(new IDRow("Song:  ", songID, songList, IDLists.songs));
+
+		selectorPanel.add(delete);
+		selectorPanel.add(up);
+		selectorPanel.add(down);
+		selectorPanel.add(add);
 		main.add(selectorPanel);
 		
 		initializeFields();
-	}
-	
-	private void updateRowCount() {
-		int w = selector.getWidth();
-		if (w>0) selector.setVisibleRowCount((selectorModel.size()-1)/(w/150) + 1);
 	}
 	
 	private void delete(SDSL sdsl) {
@@ -261,10 +249,10 @@ public class SDSLEditorPanel extends JPanel {
 		gct.deleteDynamicCode(sdsl);
 	}
 
-	private class StagePanel extends JPanel {
+	private class IDRow extends JPanel {
 		private static final long serialVersionUID = 1L; // eclipse wants this here
 
-		public StagePanel(String label,
+		public IDRow(String label,
 				final JTextField stageID, final JComboBox<IDLists.NameAndID> stageList,
 				final List<? extends IDLists.NameAndID> stageSource) {
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -303,8 +291,8 @@ public class SDSLEditorPanel extends JPanel {
 					}
 				}
 			});
-			add(stageList);
 			add(stageID);
+			add(stageList);
 		}
 	}
 
