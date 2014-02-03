@@ -1,5 +1,6 @@
 package us.lakora.brawl.gct;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -218,7 +219,7 @@ public class Editor extends JFrame {
 
 		scp_container = new JScrollPane();
 		dsmp_container = new JPanel();
-		ep_container = new JPanel();
+		ep_container = new JPanel(new BorderLayout());
 		csvp_container = new JScrollPane();
 		sssp_container = new JScrollPane();
 		asldp_container = new JScrollPane();

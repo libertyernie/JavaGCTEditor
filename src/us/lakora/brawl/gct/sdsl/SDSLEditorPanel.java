@@ -10,13 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import us.lakora.brawl.gct.GCT;
 import us.lakora.brawl.gct.Line;
@@ -34,7 +40,8 @@ public class SDSLEditorPanel extends JPanel {
 	private JTextField songID;
 	private JComboBox<IDLists.NameAndID> songList;
 	
-	private JComboBox<SDSL> selector;
+	private JList<SDSL> selector;
+	private DefaultListModel<SDSL> selectorModel;
 	private JButton delete;
 	private ArrayList<SDSL> knownSDSLInstances;
 	
@@ -63,22 +70,27 @@ public class SDSLEditorPanel extends JPanel {
 		JButton add = new JButton("Add");
 		
 		/* Populate the box */
-		selector = new JComboBox<SDSL>();
+		selectorModel = new DefaultListModel<SDSL>();
+		selector = new JList<SDSL>(selectorModel);
+		selector.setLayoutOrientation(JList.VERTICAL);
 		for (SDSL s : getKnownSDSLInstances()) {
-			selector.addItem(s);
+			selectorModel.addElement(s);
 		}
+		selector.setFixedCellWidth(150);
+		updateRowCount();
 		/* Set the sdsl variable, if the gct has sdsl codes in it */
-		if (selector.getItemCount() > 0) {
-			this.sdsl = selector.getItemAt(0);
+		if (selectorModel.size() > 0) {
+			this.sdsl = selectorModel.get(0);
+			selector.setSelectedIndex(0);
 		}
 		
 		/* When the selector is changed, update the other boxes to show the new code */
-		selector.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		selector.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
 				if (SAVE_FIELDS_ON_CHANGE) {
 					update();
 				}
-				sdsl = selector.getItemAt(selector.getSelectedIndex()); // replace sdsl variable
+				sdsl = selector.getSelectedValue();
 				initializeFields(); // update the boxes
 			}
 		});
@@ -97,7 +109,7 @@ public class SDSLEditorPanel extends JPanel {
 		down.addActionListener(new ActionListener() {
 			public synchronized void actionPerformed(ActionEvent arg0) {
 				int index = selector.getSelectedIndex();
-				if (index < selector.getItemCount()-1) {
+				if (index < selectorModel.size()-1) {
 					selector.setSelectedIndex(index+1);
 				}
 			}
@@ -105,24 +117,26 @@ public class SDSLEditorPanel extends JPanel {
 		
 		delete.addActionListener(new ActionListener() {
 			public synchronized void actionPerformed(ActionEvent arg0) {
-				delete(sdsl);
+				if (sdsl != null) delete(sdsl);
+				updateRowCount();
 			}
 		});
 		
 		add.addActionListener(new ActionListener() {
 			public synchronized void actionPerformed(ActionEvent arg0) {
 				add();
+				updateRowCount();
 			}
 		});
 		
 		selectorPanel.add(delete);
 		selectorPanel.add(up);
-		selectorPanel.add(selector);
+		//selectorPanel.add(selector);
 		selectorPanel.add(down);
 		selectorPanel.add(add);
-		add(selectorPanel, BorderLayout.NORTH);
+		//add(selectorPanel, BorderLayout.SOUTH);
 		
-		selector.setPreferredSize(new Dimension(160, selector.getPreferredSize().height));
+		add(new JScrollPane(selector, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
 		
 		/* Create the main panel */
 		JPanel main = new JPanel();
@@ -135,25 +149,30 @@ public class SDSLEditorPanel extends JPanel {
 		/* the "song" row */
 		main.add(new StagePanel("Song:  ", songID, songList, IDLists.songs));
 		
-		JPanel songPanel = new JPanel();
-		main.add(songPanel);
-		songPanel.setLayout(new BoxLayout(songPanel, BoxLayout.X_AXIS));
+		main.add(Box.createVerticalGlue());
+		
+		main.add(selectorPanel);
 		
 		initializeFields();
 	}
 	
+	private void updateRowCount() {
+		int w = selector.getWidth();
+		if (w>0) selector.setVisibleRowCount((selectorModel.size()-1)/(w/150) + 1);
+	}
+	
 	private void delete(SDSL sdsl) {
-		selector.removeItem(sdsl);
+		selectorModel.removeElement(sdsl);
 		deleteSDSLInstance(sdsl);
-		if (selector.getItemCount() == 0) {
+		if (selectorModel.size() == 0) {
 			delete.setEnabled(false);
 		}
 	}
 	
 	private void add() {
 		SDSL sdsl = addDefaultSDSLInstance();
-		selector.addItem(sdsl);
-		selector.setSelectedItem(sdsl);
+		selectorModel.addElement(sdsl);
+		selector.setSelectedValue(sdsl, true);
 		delete.setEnabled(true);
 	}
 	
