@@ -50,12 +50,10 @@ public class SDSL extends DynamicCode {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder(20);
-		sb.append("Stage: ");
-		sb.append(Integer.toString(getStageID(), 16));
-		sb.append(" Song: ");
-		sb.append(Integer.toString(getSongID(), 16));
-		return sb.toString();
+		String songfilename = IDLists.songFor(getSongID()).filename;
+		String stage = IDLists.stageFor(getStageID()).name;
+		
+		return stage + "->" + songfilename;
 	}
 	
 	public String description() {

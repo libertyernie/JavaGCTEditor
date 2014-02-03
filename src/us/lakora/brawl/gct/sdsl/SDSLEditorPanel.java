@@ -122,6 +122,8 @@ public class SDSLEditorPanel extends JPanel {
 		selectorPanel.add(add);
 		add(selectorPanel, BorderLayout.NORTH);
 		
+		selector.setPreferredSize(new Dimension(160, selector.getPreferredSize().height));
+		
 		/* Create the main panel */
 		JPanel main = new JPanel();
 		main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
