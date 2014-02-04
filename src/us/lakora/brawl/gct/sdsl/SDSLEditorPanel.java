@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -63,12 +64,11 @@ public class SDSLEditorPanel extends JPanel {
 		
 		setLayout(new BorderLayout());
 		
-		/* Create the selectorPanel - a panel with the drop-down menu to select from the codes */
-		JPanel selectorPanel = new JPanel();
 		JButton up = new JButton(""+(char)0x2c4);
 		JButton down = new JButton(""+(char)0x2c5);
 		delete = new JButton("Del");
 		JButton add = new JButton("Add");
+		JButton save = new JButton("Save");
 		
 		/* Populate the box */
 		selectorModel = new DefaultListModel<SDSL>();
@@ -127,24 +127,38 @@ public class SDSLEditorPanel extends JPanel {
 			}
 		});
 		
+		save.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				update();
+				selector.repaint();
+			}
+		});
+		
 		add(new JScrollPane(selector, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
 		
-		/* Create the main panel */
-		JPanel main = new JPanel();
-		main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
+		/* Create the main panel, split into north/south */
+		JPanel main = new JPanel(new BorderLayout());
 		add(main, BorderLayout.CENTER);
 		
+		/* North panel */
+		Box north = new Box(BoxLayout.Y_AXIS);
+		main.add(north, BorderLayout.NORTH);
+		
 		/* the "stage" row */
-		main.add(new IDRow("Stage: ", stageID, stageList, IDLists.stages));
+		north.add(new IDRow("Stage: ", stageID, stageList, IDLists.stages));
 		
 		/* the "song" row */
-		main.add(new IDRow("Song:  ", songID, songList, IDLists.songs));
-
-		selectorPanel.add(delete);
-		selectorPanel.add(up);
-		selectorPanel.add(down);
-		selectorPanel.add(add);
-		main.add(selectorPanel);
+		north.add(new IDRow("Song:  ", songID, songList, IDLists.songs));
+		
+		/* Create the selectorBox - a box with buttons to work with the selector list */
+		Box selectorBox = new Box(BoxLayout.X_AXIS);
+		selectorBox.add(delete);
+		selectorBox.add(up);
+		selectorBox.add(down);
+		selectorBox.add(add);
+		selectorBox.add(Box.createHorizontalGlue());
+		selectorBox.add(save);
+		main.add(selectorBox, BorderLayout.SOUTH);
 		
 		initializeFields();
 	}
