@@ -155,6 +155,14 @@ public class Editor extends JFrame {
 				open();
 			}
 		});
+		m = new JMenuItem("Save As...");
+		file.add(m);
+		m.setAccelerator(KeyStroke.getKeyStroke('E', InputEvent.SHIFT_DOWN_MASK + InputEvent.CTRL_DOWN_MASK));
+		m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				saveAs();
+			}
+		});
 		m = new JMenuItem("Export...");
 		file.add(m);
 		m.setAccelerator(KeyStroke.getKeyStroke('E', InputEvent.SHIFT_DOWN_MASK + InputEvent.CTRL_DOWN_MASK));
@@ -343,7 +351,7 @@ public class Editor extends JFrame {
 		} else {
 			int result;
 			if (edited[0]) {
-				result = JOptionPane.showConfirmDialog(this, "Do you want to save " + currentFile + "?", TITLE, JOptionPane.YES_NO_CANCEL_OPTION);
+				result = JOptionPane.showConfirmDialog(this, "Do you want to save your changes to " + currentFile + "?", TITLE, JOptionPane.YES_NO_CANCEL_OPTION);
 			} else {
 				result = JOptionPane.NO_OPTION;
 			}
@@ -382,6 +390,17 @@ public class Editor extends JFrame {
 	 * Shows an "export" dialog. Even if the new file is saved, the current file variable will not be updated.
 	 */
 	private boolean export() {
+		return export(false);
+	}
+	
+	/**
+	 * Shows a "save as" dialog. If the new file is saved, the current file variable will be updated.
+	 */
+	private boolean saveAs() {
+		return export(true);
+	}
+	
+	private boolean export(boolean updateCurrentFileVariable) {
 		if (ep == null) return true;
 		ep.update();
 		JFileChooser jfc = new JFileChooser();
@@ -439,6 +458,11 @@ public class Editor extends JFrame {
 					return false;
 				}
 				bw.close();
+				if (updateCurrentFileVariable) {
+					currentFile = newfile;
+					edited[0] = false;
+					setTitle(TITLE + " - " + newfile.getName()+ " (" + this.gct.size() + ")");
+				}
 				return true;
 			}
 		} catch (IOException e) {
