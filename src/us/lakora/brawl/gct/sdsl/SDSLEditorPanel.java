@@ -169,8 +169,14 @@ public class SDSLEditorPanel extends JPanel {
 	 */
 	public void update() {
 		if (sdsl != null) {
+			int oldStageID = sdsl.getStageID();
+			int oldSongID = sdsl.getSongID();
 			sdsl.setStageID(stageID.getText());
 			sdsl.setSongID(songID.getText());
+			if (oldStageID != sdsl.getStageID() || oldSongID != sdsl.getSongID()) {
+				edited[0] = true;
+				//System.err.println("Updated SDSL - new: " + sdsl);
+			}
 		}
 	}
 	
@@ -266,7 +272,6 @@ public class SDSLEditorPanel extends JPanel {
 			stageID.addFocusListener(new FocusListener() {
 				public void focusGained(FocusEvent arg0) {}
 				public void focusLost(FocusEvent arg0) {
-					edited[0] = true;
 					/* When the stage ID box loses focus, update the list */
 					int id = Integer.parseInt(stageID.getText(), 16);
 					stageList.setSelectedIndex(0); // fallback
@@ -283,7 +288,6 @@ public class SDSLEditorPanel extends JPanel {
 			}
 			stageList.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					edited[0] = true;
 					/* When the stage list is changed, update the ID box */
 					int index = stageList.getSelectedIndex();
 					if (index != 0) { // But don't change the text box if the first item (empty) is selected
