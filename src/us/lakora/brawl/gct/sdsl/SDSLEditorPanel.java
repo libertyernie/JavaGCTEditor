@@ -61,8 +61,6 @@ public class SDSLEditorPanel extends JPanel {
 		
 		setLayout(new BorderLayout());
 		
-		JButton up = new JButton(""+(char)0x2c4);
-		JButton down = new JButton(""+(char)0x2c5);
 		delete = new JButton("Del");
 		JButton add = new JButton("Add");
 		JButton save = new JButton("Update");
@@ -89,26 +87,6 @@ public class SDSLEditorPanel extends JPanel {
 				}
 				sdsl = selector.getSelectedValue();
 				initializeFields(); // update the boxes
-			}
-		});
-		
-		/* Go up (decrement) when the up button is pressed */
-		up.addActionListener(new ActionListener() {
-			public synchronized void actionPerformed(ActionEvent arg0) {
-				int index = selector.getSelectedIndex();
-				if (index > 0) {
-					selector.setSelectedIndex(index-1);
-				}
-			}
-		});
-
-		/* Go down (increment) when the up button is pressed */
-		down.addActionListener(new ActionListener() {
-			public synchronized void actionPerformed(ActionEvent arg0) {
-				int index = selector.getSelectedIndex();
-				if (index < selectorModel.size()-1) {
-					selector.setSelectedIndex(index+1);
-				}
 			}
 		});
 		
@@ -150,8 +128,6 @@ public class SDSLEditorPanel extends JPanel {
 		/* Create the selectorBox - a box with buttons to work with the selector list */
 		Box selectorBox = new Box(BoxLayout.X_AXIS);
 		selectorBox.add(delete);
-		selectorBox.add(up);
-		selectorBox.add(down);
 		selectorBox.add(add);
 		selectorBox.add(Box.createHorizontalGlue());
 		selectorBox.add(save);
