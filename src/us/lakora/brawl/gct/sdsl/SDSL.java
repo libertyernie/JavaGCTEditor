@@ -42,7 +42,12 @@ public class SDSL extends DynamicCode {
 	public void setStageID(int i) {
 		lines[0].data[7] = (byte)i;
 	}
-	
+
+	public void setSongID(int val) {
+		short sh = (short)val;
+		lines[2].data[6] = (byte)(sh / 256);
+		lines[2].data[7] = (byte)(sh % 256);
+	}
 	public void setSongID(String s) {
 		short sh = (short)Integer.parseInt(s, 16);
 		lines[2].data[6] = (byte)(sh / 256);
@@ -50,16 +55,21 @@ public class SDSL extends DynamicCode {
 	}
 	
 	public String toString() {
-		String songfilename = IDLists.songFor(getSongID()).filename;
-		String stage = IDLists.stageFor(getStageID()).name;
+		IDLists.Song song = IDLists.songFor(getSongID());
+		String songfilename = song != null ? song.filename : '('+Integer.toString(getSongID(), 16)+')';
+		IDLists.Stage stage = IDLists.stageFor(getStageID());
+		String stagename = stage != null ? stage.name : '('+Integer.toString(getStageID(), 16)+')';
 		
-		return stage + "->" + songfilename;
+		return stagename + "->" + songfilename;
 	}
 	
 	public String description() {
-		String song = IDLists.songFor(getSongID()).toString();
-		String stage = IDLists.stageFor(getStageID()).name;
-		return stage + ": always play " + song + " [Oshtoby]";
+		IDLists.Song song = IDLists.songFor(getSongID());
+		String songdesc = song != null ? song.toString() : '('+Integer.toString(getSongID(), 16)+')';
+		IDLists.Stage stage = IDLists.stageFor(getStageID());
+		String stagename = stage != null ? stage.name : '('+Integer.toString(getStageID(), 16)+')';
+		
+		return stagename + ": always play " + songdesc + " [Oshtoby]";
 	}
 	
 	public Line getStageLinePointer() {

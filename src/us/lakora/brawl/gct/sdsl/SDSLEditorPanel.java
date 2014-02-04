@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -35,10 +36,11 @@ public class SDSLEditorPanel extends JPanel {
 	private SDSL sdsl;
 	private GCT gct;
 	
-	private JTextField stageID;
+	/*private JTextField stageID;
 	private JComboBox<IDLists.NameAndID> stageList;
 	private JTextField songID;
-	private JComboBox<IDLists.NameAndID> songList;
+	private JComboBox<IDLists.NameAndID> songList;*/
+	private IDRow stageRow, songRow;
 	
 	private JList<SDSL> selector;
 	private DefaultListModel<SDSL> selectorModel;
@@ -53,11 +55,6 @@ public class SDSLEditorPanel extends JPanel {
 	public SDSLEditorPanel(GCT gctarg, boolean[] edited) {
 		this.gct = gctarg;
 		this.edited = edited;
-		
-		stageID = new JTextField();
-		stageList = new JComboBox<IDLists.NameAndID>();
-		songID = new JTextField();
-		songList = new JComboBox<IDLists.NameAndID>();
 		
 		setLayout(new BorderLayout());
 		
@@ -120,10 +117,12 @@ public class SDSLEditorPanel extends JPanel {
 		main.add(north, BorderLayout.NORTH);
 		
 		/* the "stage" row */
-		north.add(new IDRow("Stage: ", stageID, stageList, IDLists.stages));
+		stageRow = new IDRow("Stage: ", IDLists.stages);
+		north.add(stageRow);
 		
 		/* the "song" row */
-		north.add(new IDRow("Song:  ", songID, songList, IDLists.songs));
+		songRow = new IDRow("Song:  ", IDLists.songs);
+		north.add(songRow);
 		
 		/* Create the selectorBox - a box with buttons to work with the selector list */
 		Box selectorBox = new Box(BoxLayout.X_AXIS);
@@ -158,39 +157,23 @@ public class SDSLEditorPanel extends JPanel {
 		if (sdsl != null) {
 			int oldStageID = sdsl.getStageID();
 			int oldSongID = sdsl.getSongID();
-			sdsl.setStageID(stageID.getText());
-			sdsl.setSongID(songID.getText());
+			sdsl.setStageID(stageRow.getID());
+			sdsl.setSongID(songRow.getID());
 			if (oldStageID != sdsl.getStageID() || oldSongID != sdsl.getSongID()) {
 				edited[0] = true;
-				//System.err.println("Updated SDSL - new: " + sdsl);
 			}
 		}
 	}
 	
 	private void initializeFields() {
-		JComponent[] temporary = {stageID, stageList, songID, songList};
 		if (sdsl == null) {
-			for (int i=0; i<temporary.length; i++) {
-				temporary[i].setEnabled(false);
-			}
+			stageRow.setEnabled(false);
+			songRow.setEnabled(false);
 		} else {
-			stageID.setText(Integer.toString(sdsl.getStageID(), 16));
-			int i1 = IDLists.stageIndexFor(sdsl.getStageID());
-			if (i1 >= 0) {
-				stageList.setSelectedIndex(i1);
-			} else {
-				stageList.setSelectedIndex(0);
-			}
-			songID.setText(Integer.toString(sdsl.getSongID(), 16));
-			int i2 = IDLists.songIndexFor(sdsl.getSongID());
-			if (i2 >= 0) {
-				songList.setSelectedIndex(i2);
-			} else {
-				songList.setSelectedIndex(0);
-			}
-			for (int i=0; i<temporary.length; i++) {
-				temporary[i].setEnabled(true);
-			}
+			stageRow.setID(sdsl.getStageID());
+			songRow.setID(sdsl.getSongID());
+			stageRow.setEnabled(true);
+			songRow.setEnabled(true);
 		}
 	}
 	
@@ -244,10 +227,15 @@ public class SDSLEditorPanel extends JPanel {
 
 	private class IDRow extends JPanel {
 		private static final long serialVersionUID = 1L; // eclipse wants this here
+		
+		private JTextField stageID;
+		private JComboBox<IDLists.NameAndID> stageList;
+		private List<? extends IDLists.NameAndID> stageSource;
 
-		public IDRow(String label,
-				final JTextField stageID, final JComboBox<IDLists.NameAndID> stageList,
-				final List<? extends IDLists.NameAndID> stageSource) {
+		public IDRow(String label, List<? extends IDLists.NameAndID> ss) {
+			stageID = new JTextField();
+			stageList = new JComboBox<IDLists.NameAndID>();
+			this.stageSource = ss;
 			setLayout(new BorderLayout());
 			
 			if (sdsl == null) {
@@ -259,14 +247,7 @@ public class SDSLEditorPanel extends JPanel {
 				public void focusGained(FocusEvent arg0) {}
 				public void focusLost(FocusEvent arg0) {
 					/* When the stage ID box loses focus, update the list */
-					int id = Integer.parseInt(stageID.getText(), 16);
-					stageList.setSelectedIndex(0); // fallback
-					for (int i=0; i<stageSource.size(); i++) {
-						if (stageSource.get(i).id == id) {
-							stageList.setSelectedIndex(i);
-							break;
-						}
-					}
+					textBoxToList();
 				}
 			});
 			for (IDLists.NameAndID s : stageSource) {
@@ -288,6 +269,29 @@ public class SDSLEditorPanel extends JPanel {
 			leftmost.setPreferredSize(new Dimension(80,16));
 			add(leftmost, BorderLayout.WEST);
 			add(stageList, BorderLayout.CENTER);
+		}
+
+		public int getID() {
+			return Integer.parseInt(stageID.getText(), 16);
+		}
+		public void setID(int id) {
+			stageID.setText(Integer.toString(id, 16));
+			textBoxToList();
+		}
+		
+		public boolean isValidID() {
+			return stageList.getSelectedIndex() > 0;
+		}
+		
+		private void textBoxToList() {
+			int id = Integer.parseInt(stageID.getText(), 16);
+			stageList.setSelectedIndex(0); // fallback
+			for (int i=0; i<stageSource.size(); i++) {
+				if (stageSource.get(i).id == id) {
+					stageList.setSelectedIndex(i);
+					break;
+				}
+			}
 		}
 	}
 
