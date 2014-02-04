@@ -58,9 +58,6 @@ public class SDSLEditorPanel extends JPanel {
 		stageList = new JComboBox<IDLists.NameAndID>();
 		songID = new JTextField();
 		songList = new JComboBox<IDLists.NameAndID>();
-
-		stageID.setMinimumSize(new Dimension(32, 24));
-		songID.setMinimumSize(new Dimension(32, 24));
 		
 		setLayout(new BorderLayout());
 		
@@ -68,7 +65,7 @@ public class SDSLEditorPanel extends JPanel {
 		JButton down = new JButton(""+(char)0x2c5);
 		delete = new JButton("Del");
 		JButton add = new JButton("Add");
-		JButton save = new JButton("Save");
+		JButton save = new JButton("Update");
 		
 		/* Populate the box */
 		selectorModel = new DefaultListModel<SDSL>();
@@ -275,9 +272,8 @@ public class SDSLEditorPanel extends JPanel {
 		public IDRow(String label,
 				final JTextField stageID, final JComboBox<IDLists.NameAndID> stageList,
 				final List<? extends IDLists.NameAndID> stageSource) {
-			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			setLayout(new BorderLayout());
 			
-			add(new JLabel(label));
 			if (sdsl == null) {
 				stageID.setEnabled(false);
 			} else {
@@ -309,8 +305,13 @@ public class SDSLEditorPanel extends JPanel {
 					}
 				}
 			});
-			add(stageID);
-			add(stageList);
+			
+			Box leftmost = new Box(BoxLayout.X_AXIS);
+			leftmost.add(new JLabel(label));
+			leftmost.add(stageID);
+			leftmost.setPreferredSize(new Dimension(80,16));
+			add(leftmost, BorderLayout.WEST);
+			add(stageList, BorderLayout.CENTER);
 		}
 	}
 
