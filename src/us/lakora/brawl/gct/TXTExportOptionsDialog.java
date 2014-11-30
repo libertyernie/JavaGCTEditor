@@ -35,7 +35,7 @@ public class TXTExportOptionsDialog extends JDialog {
 		add(optRaw);
 		optSameOrder = new JRadioButton("Split codes, keep ordering");
 		add(optSameOrder);
-		optKnownFirst = new JRadioButton("Static codes 1st; dynamic codes 2nd; remainder 3rd");
+		optKnownFirst = new JRadioButton("Static codes 1st; dynamic codes 2nd; remainder 3rd", true);
 		add(optKnownFirst);
 
 		ButtonGroup group = new ButtonGroup();
@@ -43,7 +43,7 @@ public class TXTExportOptionsDialog extends JDialog {
 		group.add(optSameOrder);
 		group.add(optKnownFirst);
 		
-		sortedByOrigOrder = new JCheckBox("Sort static codes by original GCT order", false);
+		sortedByOrigOrder = new JCheckBox("Sort static codes by original GCT order", true);
 		add(sortedByOrigOrder);
 		sdslAfter = new JCheckBox("Put SDSL codes at end of file", false);
 		add(sdslAfter);
@@ -80,6 +80,7 @@ public class TXTExportOptionsDialog extends JDialog {
 		});
 		buttons.add(cancel);
 		
+		this.setTitle("Export");
 		pack();
 	}
 	

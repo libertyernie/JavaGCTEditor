@@ -186,7 +186,7 @@ C21C8658 00000007
 9250FFF0 60000000
 60000000 00000000
 
-File Patch Code (NTSC-U) [Phantom Wings] - Project M 3.0
+File Patch Code (NTSC-U) [Phantom Wings] - Project M
 E0000000 80008000
 225664EC 00000000
 0401BFE0 4858BE20
@@ -303,7 +303,7 @@ BC410008 3D009034
 4BC25854 00000000
 E0000000 80008000
 
-Replacement SoundBank Engine [InternetExplorer, Dantarion] - Project M 3.0
+Replacement SoundBank Engine [InternetExplorer, Dantarion] - Project M
 80000000 80406920
 80000001 805A7D18
 045A7D00 805A7D18
@@ -385,7 +385,7 @@ C21C8658 00000007
 
 Disable Custom Stages 1.1 [Phantom Wings]
 046B841C 48000040
-Only needed if your hacks are in /private/wii/app/RSBE/pf on the SD card.
+Only needed if you have the Smash Stack file in /private/wii/app/RSBE/st on your SD card.
 
 Unrestricted Pause Camera
 040A7D60 4E800020
@@ -603,7 +603,7 @@ A0630002 7C071800
 81220014 38000000
 60000000 00000000
 
-Custom CSS [spunit262] - Project M 3.0
+Custom CSS [spunit262] - Project M
 0668310c 00000030
 387e006c 3b600000
 3c808068 38840de0
