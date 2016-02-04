@@ -46,10 +46,10 @@ import us.lakora.brawl.gct.staticcodes.StaticCodePanel;
 public class Editor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
-	public final static String TITLE = "In-Place GCT Editor 3.6";
+	public final static String TITLE = "In-Place GCT Editor 3.7";
 	
 	private final static String ABOUT = TITLE + "\n" +
-			(char)169 + " 2014 libertyernie\n" +
+			(char)169 + " 2016 libertyernie\n" +
 			"\n" +
 			"This program is designed to export GCT codesets for Brawl, along with\n" +
 			"the capability to add/remove instances of the Stage-Dependent Song\n" +
