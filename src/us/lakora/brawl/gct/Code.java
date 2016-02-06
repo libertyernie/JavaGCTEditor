@@ -27,14 +27,14 @@ public abstract class Code {
 	public static String codeLinesToString(Line[] lines) {
 		StringBuilder sb = new StringBuilder(10*lines.length);
 		for (Line l : lines) {
-			sb.append("* "+l.toString()+"\n");
+			sb.append("* "+l.toString()+"\r\n");
 		}
 		return sb.toString();
 	}
 	public static String codeLinesToString(Iterable<Line> lines) {
 		StringBuilder sb = new StringBuilder();
 		for (Line l : lines) {
-			sb.append("* "+l.toString()+"\n");
+			sb.append("* "+l.toString()+"\r\n");
 		}
 		return sb.toString();
 	}

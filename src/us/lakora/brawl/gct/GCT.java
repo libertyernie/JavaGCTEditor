@@ -110,23 +110,23 @@ public class GCT {
 	 * @param separate Whether to separate the known codes (true) or export everything as one block (false).
 	 */
 	public String exportSameOrder(boolean separate) {
-		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n");
+		StringBuilder sb = new StringBuilder("\r\nRSBE01\r\nSuper Smash Bros. Brawl (US)\r\n");
 		Code currentCode = null;
 		if (allLines.get(0).getAssignedCode() == null) {
-			sb.append("\nUnknown Code(s)\n");
+			sb.append("\r\nUnknown Code(s)\r\n");
 		}
 		for (Line l : allLines) {
 			if (separate && currentCode != l.getAssignedCode()) {
 				String comments = currentCode == null ? null : currentCode.getComments();
 				if (comments != null) sb.append(comments);
 				
-				sb.append("\n");
+				sb.append("\r\n");
 				
 				currentCode = l.getAssignedCode();
 				String desc = currentCode == null ? "Unknown Code(s)" : currentCode.description();
-				sb.append(desc + "\n");
+				sb.append(desc + "\r\n");
 			}
-			sb.append("* " + l.toString() + "\n");
+			sb.append("* " + l.toString() + "\r\n");
 		}
 		return sb.toString();
 	}
@@ -140,13 +140,13 @@ public class GCT {
 		LinkedList<SDSL> sdsls = new LinkedList<SDSL>();
 		
 		HashSet<Line> toSkip = new HashSet<Line>();
-		StringBuilder sb = new StringBuilder("\nRSBE01\nSuper Smash Bros. Brawl (US)\n\n");
+		StringBuilder sb = new StringBuilder("\r\nRSBE01\r\nSuper Smash Bros. Brawl (US)\r\n\r\n");
 		
 		/*ArrayList<StaticCodeOccurrence> sorted = new ArrayList<StaticCodeOccurrence>(knownStaticCodes);
 		if (sortByOriginalOrder) Collections.sort(sorted);*/
 		
 		for (Code code : knownCodes) {
-			sb.append(code.description()+"\n");
+			sb.append(code.description()+"\r\n");
 			
 			Line[] codeLines = code.getLineArray();
 			sb.append(Code.codeLinesToString(codeLines));
@@ -156,23 +156,23 @@ public class GCT {
 			if (comments != null) {
 				sb.append(comments);
 			}
-			sb.append('\n');
+			sb.append("\r\n");
 		}
 		if (toSkip.size() != allLines.size()) {
-			sb.append("Remainder of Codeset\n");
+			sb.append("Remainder of Codeset\r\n");
 			for (Line l : allLines) {
 				if (!toSkip.contains(l)) {
-					sb.append("* " + l.toString() + "\n");
+					sb.append("* " + l.toString() + "\r\n");
 				}
 			}
 		}
-		sb.append('\n');
+		sb.append("\r\n");
 		if (!sdsls.isEmpty()) {
-			sb.append("Stage-Dependent Song Loaders [Oshtoby]\n\n");
+			sb.append("Stage-Dependent Song Loaders [Oshtoby]\r\n\r\n");
 			for (SDSL sdsl : sdsls) {
 				List<Line> codeLines = Arrays.asList(sdsl.getLineArray());
-				sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\n");
-				sb.append(Code.codeLinesToString(codeLines) + "\n");
+				sb.append(sdsl.description().replace(" [Oshtoby]", "") + "\r\n");
+				sb.append(Code.codeLinesToString(codeLines) + "\r\n");
 			}
 		}
 		return sb.toString();
@@ -183,7 +183,7 @@ public class GCT {
 		for (Line l : allLines) {
 			sb.append(l + " ");
 			sb.append(l.getAssignedCode() != null ? l.getAssignedCode().description() : "(none)");
-			sb.append('\n');
+			sb.append("\r\n");
 		}
 		return sb.toString();
 	}
