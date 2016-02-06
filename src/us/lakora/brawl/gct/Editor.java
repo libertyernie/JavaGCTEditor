@@ -46,7 +46,7 @@ import us.lakora.brawl.gct.staticcodes.StaticCodePanel;
 public class Editor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
-	public final static String TITLE = "In-Place GCT Editor 3.7";
+	public final static String TITLE = "In-Place GCT Editor 3.7.1";
 	
 	private final static String ABOUT = TITLE + "\n" +
 			(char)169 + " 2016 libertyernie\n" +
