@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -35,8 +36,17 @@ public class GCT {
 			(byte)0xd0,
 			(byte)0xc0,
 			(byte)0xde};
-	private static final byte[] FOOTER = {
+	private static final byte[] FOOTER1 = {
 			(byte)0xf0,
+			(byte)0x00,
+			(byte)0x00,
+			(byte)0x00,
+			(byte)0x00,
+			(byte)0x00,
+			(byte)0x00,
+			(byte)0x00};
+	private static final byte[] FOOTER2 = {
+			(byte)0xff,
 			(byte)0x00,
 			(byte)0x00,
 			(byte)0x00,
@@ -49,13 +59,15 @@ public class GCT {
 
 	private LinkedList<Code> knownCodes;
 	
+	private String gamecode;
+	
 	/**
 	 * Reads the data from an InputStream and then closes it.
 	 * @param is
 	 * @throws IOException Passed on from the InputStream.
 	 * @throws GCTFormatException If the header or footer of the GCT file is invalid.
 	 */
-	public GCT(InputStream is) throws IOException, GCTFormatException, InterruptedException {
+	private GCT(InputStream is) throws IOException, GCTFormatException, InterruptedException {
 		allLines = new LinkedList<Line>();
 		knownCodes = new LinkedList<Code>();
 		byte[] header = new byte[8];
@@ -66,10 +78,10 @@ public class GCT {
 				allLines.add(new Line(nextLine));
 			}
 			Line last = allLines.getLast();
-			if (last.startsWith(FOOTER)) {
+			if (last.startsWith(FOOTER1) || last.startsWith(FOOTER2)) {
 				allLines.removeLast();
 			} else {
-				throw new GCTFormatException("The GCT footer is invalid");
+				throw new GCTFormatException("The GCT footer is invalid. (Was this file made by BrawlBox? It might have metadata appended to it - if so, just use BrawlBox to edit it.)");
 			}
 		} else {
 			// assume text file
@@ -99,10 +111,10 @@ public class GCT {
 	
 	public GCT(File f) throws FileNotFoundException, IOException, GCTFormatException, InterruptedException {
 		this(new BufferedInputStream(new FileInputStream(f)));
-	}
-	
-	public GCT(String s) throws FileNotFoundException, IOException, GCTFormatException, InterruptedException {
-		this(new BufferedInputStream(new FileInputStream(s)));
+		gamecode = (f.getName() + "      ").substring(0, 6);
+		if (!Pattern.matches("^[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][0-9][0-9]$", gamecode)) {
+			gamecode = "RSBE01";
+		}
 	}
 	
 	/**
@@ -110,7 +122,14 @@ public class GCT {
 	 * @param separate Whether to separate the known codes (true) or export everything as one block (false).
 	 */
 	public String exportSameOrder(boolean separate) {
-		StringBuilder sb = new StringBuilder("\r\nRSBE01\r\nSuper Smash Bros. Brawl (US)\r\n");
+		StringBuilder sb = new StringBuilder();
+		if (gamecode.equals("RSBE01")) {
+			sb.append("\r\nRSBE01\r\nSuper Smash Bros. Brawl (US)\r\n");
+		} else {
+			sb.append("\r\n");
+			sb.append(gamecode);
+			sb.append("\r\nUnknown\r\n");
+		}
 		Code currentCode = null;
 		if (allLines.get(0).getAssignedCode() == null) {
 			sb.append("\r\nUnknown Code(s)\r\n");
@@ -140,7 +159,15 @@ public class GCT {
 		LinkedList<SDSL> sdsls = new LinkedList<SDSL>();
 		
 		HashSet<Line> toSkip = new HashSet<Line>();
-		StringBuilder sb = new StringBuilder("\r\nRSBE01\r\nSuper Smash Bros. Brawl (US)\r\n\r\n");
+		StringBuilder sb = new StringBuilder();
+		if (gamecode.equals("RSBE01")) {
+			sb.append("\r\nRSBE01\r\nSuper Smash Bros. Brawl (US)\r\n");
+		} else {
+			sb.append("\r\n");
+			sb.append(gamecode);
+			sb.append("\r\nUnknown\r\n");
+		}
+		sb.append("\r\n");
 		
 		/*ArrayList<StaticCodeOccurrence> sorted = new ArrayList<StaticCodeOccurrence>(knownStaticCodes);
 		if (sortByOriginalOrder) Collections.sort(sorted);*/
@@ -206,7 +233,7 @@ public class GCT {
 		for (Line l : allLines) {
 			os.write(l.data);
 		}
-		os.write(FOOTER);
+		os.write(FOOTER1);
 		os.close();
 	}
 	
